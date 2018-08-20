@@ -1,0 +1,7 @@
+package app
+
+const ERROR_AUTH = 0x9000
+
+const ERROR_AUTH_NOT_FOUND_CODE = ERROR_AUTH + 1
+
+const ERROR_AUTH_NOPERMISSION = ERROR_AUTH + 2

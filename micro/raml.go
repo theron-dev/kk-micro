@@ -9,8 +9,8 @@ import (
 	"github.com/hailongz/kk-lib/dynamic"
 )
 
-func GetStructFieldsDocRAML(t reflect.Type) map[interface{}]interface{} {
-	v := map[interface{}]interface{}{}
+func GetStructFieldsDocRAML(t reflect.Type) map[string]interface{} {
+	v := map[string]interface{}{}
 
 	if t.Kind() == reflect.Struct {
 
@@ -46,9 +46,9 @@ func GetStructFieldsDocRAML(t reflect.Type) map[interface{}]interface{} {
 	return v
 }
 
-func GetStructDocRAML(t reflect.Type) map[interface{}]interface{} {
+func GetStructDocRAML(t reflect.Type) map[string]interface{} {
 
-	v := map[interface{}]interface{}{}
+	v := map[string]interface{}{}
 
 	switch t.Kind() {
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32:
@@ -93,9 +93,9 @@ func GetStructDocSchemaRAML(t reflect.Type) string {
 	return b.String()
 }
 
-func GetStructFieldsDocExampleRAML(t reflect.Type) map[interface{}]interface{} {
+func GetStructFieldsDocExampleRAML(t reflect.Type) map[string]interface{} {
 
-	v := map[interface{}]interface{}{}
+	v := map[string]interface{}{}
 
 	if t.Kind() == reflect.Struct {
 
@@ -140,7 +140,7 @@ func GetStructDocExampleRAML(t reflect.Type) interface{} {
 	case reflect.Bool:
 		return false
 	case reflect.Interface, reflect.Map:
-		return map[interface{}]interface{}{}
+		return map[string]interface{}{}
 	case reflect.String:
 		return ""
 	case reflect.Ptr:
@@ -173,15 +173,15 @@ func GetTaskDocRAML(t reflect.Type) interface{} {
 
 	r := task.GetResult()
 
-	v := map[interface{}]interface{}{}
+	v := map[string]interface{}{}
 
-	post := map[interface{}]interface{}{}
+	post := map[string]interface{}{}
 
 	post["description"] = task.GetTitle()
 
-	post["body"] = map[interface{}]interface{}{"schema": GetStructDocSchemaRAML(t), "example": GetStructDocExampleStringRAML(t)}
+	post["body"] = map[string]interface{}{"schema": GetStructDocSchemaRAML(t), "example": GetStructDocExampleStringRAML(t)}
 
-	post["responses"] = map[interface{}]interface{}{200: map[interface{}]interface{}{"body": map[interface{}]interface{}{"schema": GetStructDocSchemaRAML(reflect.TypeOf(r)), "example": GetStructDocExampleStringRAML(reflect.TypeOf(r))}}}
+	post["responses"] = map[string]interface{}{"200": map[string]interface{}{"body": map[string]interface{}{"schema": GetStructDocSchemaRAML(reflect.TypeOf(r)), "example": GetStructDocExampleStringRAML(reflect.TypeOf(r))}}}
 
 	v["post"] = post
 
@@ -190,15 +190,16 @@ func GetTaskDocRAML(t reflect.Type) interface{} {
 
 func GetDocRAML(app IApp, uri string) interface{} {
 
-	v := map[interface{}]interface{}{}
+	v := map[string]interface{}{}
 
-	v["title"] = app.GetName()
+	v["title"] = app.GetTitle()
 	v["baseUri"] = uri
 	v["mediaType"] = "application/json"
 
-	for name, t := range app.GetTasks() {
-		v[name+".json"] = GetTaskDocRAML(t)
-	}
+	app.Each(func(name string, taskType reflect.Type) bool {
+		v[name+".json"] = GetTaskDocRAML(taskType)
+		return true
+	})
 
 	return v
 }

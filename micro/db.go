@@ -1,216 +1,102 @@
 package micro
 
 import (
-	"bytes"
 	"database/sql"
 	"time"
 
-	"reflect"
-
-	"github.com/hailongz/kk-lib/db"
+	"github.com/hailongz/kk-lib/dynamic"
 )
 
-type Database struct {
-	Name          string `json:"name" yaml:"name"`
-	Url           string `json:"url" yaml:"url"`
-	Prefix        string `json:"prefix" yaml:"prefix"`
-	MaxIdleConns  int    `json:"maxIdleConns" yaml:"maxIdleConns"`
-	MaxOpenConns  int    `json:"maxOpenConns" yaml:"maxOpenConns"`
-	MaxLifetime   int64  `json:"maxLifetime" yaml:"maxLifetime"`
-	AutoIncrement int64  `json:"autoIncrement" yaml:"autoIncrement"`
-	conn          *sql.DB
+type DBOpenTaskResult struct {
+	Prefix string  `title:"表名前缀"`
+	Conn   *sql.DB `title:"数据库链接"`
 }
 
-func DatabaseSearch(app IApp) []*Database {
+type DBOpenTask struct {
+	Name string `title:"配置选项名"`
 
-	vs := []*Database{}
-
-	var v = reflect.ValueOf(app)
-
-	if v.Kind() == reflect.Ptr {
-		v = v.Elem()
-	}
-
-	for i := 0; i < v.NumField(); i++ {
-
-		fd := v.Field(i)
-
-		if fd.Kind() == reflect.Struct && fd.CanAddr() {
-
-			r, ok := fd.Addr().Interface().(*Database)
-
-			if ok {
-				vs = append(vs, r)
-			}
-
-		} else if fd.Kind() == reflect.Ptr {
-
-			var vv interface{} = nil
-
-			if fd.IsNil() {
-				vv = reflect.New(fd.Type().Elem()).Interface()
-			} else {
-				vv = fd.Interface()
-			}
-
-			if vv != nil {
-
-				r, ok := vv.(*Database)
-
-				if ok {
-					vs = append(vs, r)
-				}
-			}
-
-		}
-
-	}
-
-	return vs
+	Result DBOpenTaskResult
 }
 
-func (C *Database) Open(app IApp) (*sql.DB, error) {
-
-	if C.conn == nil {
-
-		var conn, err = sql.Open(C.Name, C.Url)
-
-		if err != nil {
-			return nil, err
-		}
-
-		conn.SetMaxIdleConns(C.MaxIdleConns)
-		conn.SetMaxOpenConns(C.MaxOpenConns)
-		conn.SetConnMaxLifetime(time.Duration(C.MaxLifetime) * time.Second)
-
-		C.conn = conn
-	}
-
-	return C.conn, nil
+func (T *DBOpenTask) GetName() string {
+	return ""
 }
 
-func (C *Database) InstallSQL(app IApp) (string, error) {
-
-	scheme := app.GetScheme()
-
-	conn, err := C.Open(app)
-
-	if err != nil {
-		return "", err
-	}
-
-	b := bytes.NewBuffer(nil)
-
-	var v = reflect.ValueOf(app)
-
-	if v.Kind() == reflect.Ptr {
-		v = v.Elem()
-	}
-
-	for i := 0; i < v.NumField(); i++ {
-
-		fd := v.Field(i)
-
-		if fd.Kind() == reflect.Struct && fd.CanAddr() {
-
-			r, ok := fd.Addr().Interface().(db.IObject)
-
-			if ok {
-				v, err := scheme.InstallSQL(conn, r, C.Prefix, C.AutoIncrement)
-				if err != nil {
-					return "", err
-				}
-				b.WriteString(v)
-				b.WriteString("\n")
-			}
-
-		} else if fd.Kind() == reflect.Ptr {
-
-			var vv interface{} = nil
-
-			if fd.IsNil() {
-				vv = reflect.New(fd.Type().Elem()).Interface()
-			} else {
-				vv = fd.Interface()
-			}
-
-			if vv != nil {
-
-				r, ok := vv.(db.IObject)
-
-				if ok {
-					v, err := scheme.InstallSQL(conn, r, C.Prefix, C.AutoIncrement)
-					if err != nil {
-						return "", err
-					}
-					b.WriteString(v)
-					b.WriteString("\n")
-				}
-			}
-
-		}
-
-	}
-
-	return b.String(), nil
+func (T *DBOpenTask) GetTitle() string {
+	return "获取数据库链接"
 }
 
-func (C *Database) Install(app IApp) error {
+func (T *DBOpenTask) GetResult() interface{} {
+	return &T.Result
+}
 
-	scheme := app.GetScheme()
+type DBService struct {
+	conns map[string]DBOpenTaskResult
+}
 
-	conn, err := C.Open(app)
+func (S *DBService) GetTitle() string {
+	return "数据库服务"
+}
+
+func (S *DBService) HandleDBOpenTask(app IApp, task *DBOpenTask) error {
+
+	if S.conns == nil {
+		S.conns = map[string]DBOpenTaskResult{}
+	}
+
+	name := task.Name
+
+	if name == "" {
+		name = "db"
+	}
+
+	rs, ok := S.conns[name]
+
+	if ok {
+		task.Result = rs
+		return nil
+	}
+
+	config := dynamic.Get(app.Config(), name)
+
+	drive := dynamic.StringValue(dynamic.Get(config, "name"), "mysql")
+	url := dynamic.StringValue(dynamic.Get(config, "url"), "root:123456@tcp(127.0.0.1:3306)/kk?charset=utf8mb4")
+
+	conn, err := sql.Open(drive, url)
 
 	if err != nil {
 		return err
 	}
 
-	var v = reflect.ValueOf(app)
+	err = conn.Ping()
 
-	if v.Kind() == reflect.Ptr {
-		v = v.Elem()
+	if err != nil {
+		return err
 	}
 
-	for i := 0; i < v.NumField(); i++ {
+	conn.SetMaxIdleConns(int(dynamic.IntValue(dynamic.Get(config, "maxIdleConns"), 1)))
+	conn.SetMaxOpenConns(int(dynamic.IntValue(dynamic.Get(config, "maxOpenConns"), 6)))
+	conn.SetConnMaxLifetime(time.Duration(dynamic.IntValue(dynamic.Get(config, "maxLifetime"), 6)) * time.Second)
 
-		fd := v.Field(i)
+	rs = DBOpenTaskResult{dynamic.StringValue(dynamic.Get(config, "prefix"), ""), conn}
 
-		if fd.Kind() == reflect.Struct && fd.CanAddr() {
+	S.conns[name] = rs
 
-			r, ok := fd.Addr().Interface().(db.IObject)
-
-			if ok {
-				err = scheme.Install(conn, r, C.Prefix, C.AutoIncrement)
-				if err != nil {
-					return err
-				}
-			}
-
-		} else if fd.Kind() == reflect.Ptr {
-
-			var vv interface{} = nil
-
-			if fd.IsNil() {
-				vv = reflect.New(fd.Type().Elem()).Interface()
-			} else {
-				vv = fd.Interface()
-			}
-
-			if vv != nil {
-
-				r, ok := vv.(db.IObject)
-
-				if ok {
-					err = scheme.Install(conn, r, C.Prefix, C.AutoIncrement)
-					if err != nil {
-						return err
-					}
-				}
-			}
-
-		}
-
-	}
+	task.Result = rs
 
 	return nil
+}
+
+func DBOpen(app IApp, name string) (*sql.DB, string, error) {
+
+	task := DBOpenTask{}
+	task.Name = name
+
+	err := app.Handle(&task)
+
+	if err != nil {
+		return nil, "", err
+	}
+
+	return task.Result.Conn, task.Result.Prefix, nil
 }

@@ -1,235 +1,166 @@
 package micro
 
 import (
-	"bytes"
 	"encoding/json"
-	"io"
+	"io/ioutil"
 	"os"
 	"reflect"
 	"strings"
 
 	"github.com/go-yaml/yaml"
-	"github.com/hailongz/kk-lib/db"
 	"github.com/hailongz/kk-lib/dynamic"
 )
 
-type IExec interface {
-	Exec(app IApp)
-}
-
-var defaultScheme db.IScheme
-
-func init() {
-	defaultScheme = db.NewScheme()
-}
-
 type IApp interface {
-	Init()
-	SetTask(task ITask)
-	GetTasks() map[string]reflect.Type
+	Config() interface{}
+	Use(task ITask, service IService)
+	AddDefaultService(service IService)
+	Handle(task ITask) error
 	NewTask(name string) ITask
-	GetName() string
-	GetScheme() db.IScheme
+	Each(fn func(name string, taskType reflect.Type) bool)
+	GetTitle() string
+	GetPrefix() string
 }
 
 type App struct {
-	tasks     map[string]reflect.Type
-	Name      string `json:"name" yaml:"name"`
-	MaxMemory int64  `json:"maxMemory" yaml:"maxMemory"`
-	Address   string `json:"address" yaml:"address"`
-	Timeout   int64  `json:"timeout" yaml:"timeout"`
+	config          interface{}
+	tasks           map[string]reflect.Type
+	services        map[string]IService
+	defaultServices []IService
 }
 
-func (A *App) Init() {
-	A.tasks = map[string]reflect.Type{}
+func NewApp(config interface{}) IApp {
+	v := App{}
+	v.config = config
+	v.tasks = map[string]reflect.Type{}
+	v.services = map[string]IService{}
+	v.defaultServices = []IService{}
+	return &v
 }
 
-func (A *App) NewTask(name string) ITask {
-	v, ok := A.tasks[name]
-	if ok {
-		task, ok := reflect.New(v).Interface().(ITask)
-		if ok {
-			return task
-		}
-	}
-	return nil
-}
+func NewAppWithPath(path string) (IApp, error) {
 
-func (A *App) GetScheme() db.IScheme {
-	return defaultScheme
-}
-
-func (A *App) GetTasks() map[string]reflect.Type {
-	return A.tasks
-}
-
-func (A *App) SetTask(task ITask) {
-	A.tasks[task.GetName()] = reflect.TypeOf(task).Elem()
-}
-
-func (A *App) GetName() string {
-	return A.Name
-}
-
-func obtainTask(app IApp, obtain interface{}) {
-
-	var v = reflect.ValueOf(obtain)
-
-	if v.Kind() == reflect.Ptr {
-		v = v.Elem()
-	}
-
-	if v.Kind() == reflect.Struct {
-
-		for i := 0; i < v.NumField(); i++ {
-
-			fd := v.Field(i)
-
-			if fd.Kind() == reflect.Ptr {
-
-				var vv interface{} = nil
-
-				if fd.IsNil() && fd.CanSet() {
-					fd.Set(reflect.New(fd.Type().Elem()))
-				}
-
-				if !fd.IsNil() {
-
-					vv = fd.Interface()
-
-					task, ok := vv.(ITask)
-
-					if ok {
-						app.SetTask(task)
-					} else {
-						obtainTask(app, vv)
-					}
-
-				}
-
-			}
-
-		}
-	}
-}
-
-func Load(app IApp, config interface{}) {
-	app.Init()
-	dynamic.SetValue(app, config)
-	obtainTask(app, app)
-}
-
-func LoadPath(app IApp, path string) error {
+	var config interface{} = nil
 
 	fd, err := os.Open(path)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	defer fd.Close()
 
-	b := bytes.NewBuffer(nil)
+	b, err := ioutil.ReadAll(fd)
 
-	_, err = b.ReadFrom(fd)
+	if err != nil {
+		return nil, err
+	}
 
-	if err != nil && err != io.EOF {
+	if strings.HasSuffix(path, ".json") {
+		err = json.Unmarshal(b, &config)
+		if err != nil {
+			return nil, err
+		}
+	} else if strings.HasSuffix(path, ".yaml") {
+		err = yaml.Unmarshal(b, &config)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		return nil, NewError(600, "Not Implemented Config File "+path)
+	}
+
+	return NewApp(config), nil
+}
+
+func (A *App) Config() interface{} {
+	return A.config
+}
+
+func (A *App) GetTitle() string {
+	return dynamic.StringValue(dynamic.Get(A.config, "title"), "")
+}
+
+func (A *App) GetPrefix() string {
+	return dynamic.StringValue(dynamic.Get(A.config, "prefix"), "/")
+}
+
+func (A *App) Use(task ITask, service IService) {
+	name := task.GetName()
+	A.tasks[name] = reflect.TypeOf(task).Elem()
+	A.services[name] = service
+}
+
+func (A *App) AddDefaultService(service IService) {
+	A.defaultServices = append(A.defaultServices, service)
+}
+
+func (A *App) Each(fn func(name string, taskType reflect.Type) bool) {
+
+	for name, taskType := range A.tasks {
+		if !fn(name, taskType) {
+			break
+		}
+	}
+
+}
+
+func (A *App) Handle(task ITask) error {
+
+	name := task.GetName()
+
+	s, ok := A.services[name]
+
+	if ok {
+		return ServiceReflectHandle(A, task, s)
+	} else {
+
+		var err error = nil
+
+		for _, s := range A.defaultServices {
+			err = ServiceReflectHandle(A, task, s)
+			if err != nil {
+				break
+			}
+		}
+
 		return err
 	}
 
-	var config interface{} = nil
-
-	if strings.HasSuffix(path, ".json") {
-		err = json.Unmarshal(b.Bytes(), &config)
-		if err != nil {
-			return err
-		}
-	} else if strings.HasSuffix(path, ".yaml") {
-		err = yaml.Unmarshal(b.Bytes(), &config)
-		if err != nil {
-			return err
-		}
-	}
-
-	Load(app, config)
-
-	return nil
 }
 
-func obtainExec(app IApp, obtain interface{}) {
+func (A *App) NewTask(name string) ITask {
 
-	e, ok := obtain.(IExec)
+	t, ok := A.tasks[name]
 
 	if ok {
-		e.Exec(app)
-	}
 
-	var v = reflect.ValueOf(obtain)
+		task, ok := reflect.New(t).Interface().(ITask)
 
-	if v.Kind() == reflect.Ptr {
-		v = v.Elem()
-	}
-
-	if v.Kind() == reflect.Struct {
-
-		for i := 0; i < v.NumField(); i++ {
-
-			fd := v.Field(i)
-
-			if fd.Kind() == reflect.Ptr && !fd.IsNil() {
-
-				var vv interface{} = fd.Interface()
-
-				if vv != nil {
-
-					obtainExec(app, vv)
-
-				}
-
-			}
-
+		if ok {
+			return task
 		}
-	}
-}
-
-func Exec(app IApp) {
-	obtainExec(app, app)
-}
-
-func Handle(app IApp, task ITask) error {
-
-	var v = reflect.ValueOf(app)
-
-	if v.Kind() == reflect.Ptr {
-		v = v.Elem()
-	}
-
-	for i := 0; i < v.NumField(); i++ {
-
-		fd := v.Field(i)
-
-		if fd.Kind() == reflect.Ptr && !fd.IsNil() {
-
-			vv := fd.Interface()
-
-			if vv != nil {
-
-				s, ok := vv.(IService)
-
-				if ok {
-
-					err := s.Handle(app, task)
-
-					if err != nil {
-						return err
-					}
-				}
-			}
-
-		}
-
 	}
 
 	return nil
+}
 
+func ServiceReflectHandle(app IApp, task ITask, service IService) error {
+	var t = reflect.TypeOf(task)
+	var name = t.String()
+	var v = reflect.ValueOf(service)
+	var i = strings.LastIndex(name, ".")
+	var mt = v.MethodByName("Handle" + name[i+1:])
+	if mt.IsValid() {
+		var rs = mt.Call([]reflect.Value{reflect.ValueOf(app), reflect.ValueOf(task)})
+		if rs != nil && len(rs) > 0 {
+			var r = rs[0]
+			if r.IsNil() {
+				return nil
+			} else if r.CanInterface() {
+				return r.Interface().(error)
+			}
+		}
+	}
+	return nil
 }

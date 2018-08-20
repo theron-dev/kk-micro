@@ -1,0 +1,341 @@
+
+title: 收集微服务
+type: kk/micro
+
+services:
+  User:
+    title: 用户服务
+    tasks:
+      UserJoin:
+        title: 加入用户
+        name: /user/join
+        input:
+          - name: pid
+            type: long
+            title: 项目ID
+          - name: uid
+            type: long
+            title: 用户ID
+          - name: appid
+            type: string
+            title: 第三方应用ID
+          - name: openid
+            type: string
+            title: 第三方用户ID
+          - name: phone
+            type: string
+            title: 手机号
+          - name: options
+            type: object
+            title: 其他属性
+        output:
+          - name: user
+            title: 用户
+            omitempty: true
+            type: User
+
+      UserRemove:
+        title: 删除用户
+        name: /user/remove
+        input:
+          - name: id
+            type: long
+            title: ID
+          - name: pid
+            type: long
+            title: 项目ID
+          - name: uid
+            type: long
+            title: 用户ID
+          - name: appid
+            type: string
+            title: 第三方应用ID
+          - name: openid
+            type: string
+            title: 第三方用户ID
+          - name: phone
+            type: string
+            title: 手机号
+        output:
+          - name: user
+            title: 用户
+            omitempty: true
+            type: User
+
+      UserGet:
+        title: 获取用户
+        name: /user/get
+        input:
+          - name: pid
+            type: long
+            title: 项目ID
+          - name: uid
+            type: long
+            title: 用户ID
+          - name: appid
+            type: string
+            title: 第三方应用ID
+          - name: openid
+            type: string
+            title: 第三方用户ID
+          - name: phone
+            type: string
+            title: 手机号
+        output:
+          - name: user
+            title: 用户
+            omitempty: true
+            type: User
+
+      UserQuery:
+        title: 查询用户
+        name: /user/query
+        type: query
+        input:
+          - name: pid
+            type: long
+            title: 项目ID
+          - name: uid
+            type: object
+            title: 用户ID
+          - name: appid
+            type: string
+            title: 第三方应用ID
+          - name: openid
+            type: string
+            title: 第三方用户ID
+          - name: phone
+            type: string
+            title: 手机号
+          - name: orderBy
+            type: string
+            title: 排序 desc(降序 默认) asc(升序)
+        output:
+          - name: users
+            title: 用户
+            omitempty: true
+            type: User[]
+
+      UserCount:
+        title: 查询用户数
+        name: /user/count
+        input:
+          - name: pid
+            type: long
+            title: 项目ID
+          - name: uid
+            type: object
+            title: 用户ID
+          - name: appid
+            type: string
+            title: 第三方应用ID
+          - name: openid
+            type: string
+            title: 第三方用户ID
+          - name: phone
+            type: string
+            title: 手机号
+        output:
+          - name: count
+            title: 数量
+            type: long
+
+  Project:
+    title: 项目服务
+    tasks:
+      ProjectCreate:
+        title: 创建项目
+        name: /project/create
+        input:
+          - name: title
+            type: string
+            title: 说明
+          - name: tags
+            type: string
+            title: 搜索关键字
+          - name: maxCount
+            type: int
+            title: 最大数量 ，-1 为不限制
+          - name: inTime
+            type: long
+            title: 上线时间（秒），0 为不自动上线
+          - name: endTime
+            type: long
+            title: 下线线时间（秒），0 为不自动下线
+          - name: options
+            type: object
+            title: 其他属性
+
+        output:
+          - name: project
+            title: 项目
+            omitempty: true
+            type: Project
+
+      ProjectSet:
+        title: 修改项目
+        name: /project/set
+        input:
+          - name: id
+            title: 收款项目ID
+            type: long
+          - name: title
+            type: object
+            title: 说明
+          - name: tags
+            type: object
+            title: 搜索关键字
+          - name: maxCount
+            type: object
+            title: 最大数量 ，-1 为不限制
+          - name: inTime
+            type: object
+            title: 上线时间（秒），0 为不自动上线
+          - name: endTime
+            type: object
+            title: 下线线时间（秒），0 为不自动下线
+          - name: status
+            type: object
+            title: 状态，200（上线），300（下线）
+          - name: options
+            type: object
+            title: 其他属性
+        output:
+          - name: project
+            title: 项目
+            omitempty: true
+            type: Project
+
+      ProjectGet:
+        title: 获取项目
+        name: /project/get
+        input:
+          - name: id
+            title: 收款项目ID
+            type: long
+          - name: status
+            type: string
+            title: 状态，多个逗号分隔
+        output:
+          - name: project
+            title: 项目
+            omitempty: true
+            type: Project
+
+      ProjectRemove:
+        title: 删除项目
+        name: /project/remove
+        input:
+          - name: id
+            title: 视图ID
+            type: long
+        output:
+          - name: project
+            title: 项目
+            omitempty: true
+            type: Project
+
+      ProjectQuery:
+        title: 查询项目
+        name: /project/query
+        type: query
+        input:
+          - name: id
+            title: 收款项目ID
+            type: long
+          - name: q
+            type: string
+            title: 关键字
+          - name: status
+            type: string
+            title: 状态，多个逗号分隔
+          - name: orderBy
+            type: string
+            title: desc(降序 默认) asc(升序) inTime(发布时间降序) endTime(截止时间降序)
+        output:
+          - name: projects
+            title: 项目
+            omitempty: true
+            type: Project[]
+      
+
+objects:
+  Project:
+    title: 项目表
+    name: project
+    type: db
+    fields:
+      - name: title
+        type: string
+        length: 255
+        title: 说明
+      - name: tags
+        type: string
+        length: 2048
+        title: 搜索关键字
+      - name: maxCount
+        type: int
+        title: 最大数量 ，-1 为不限制
+      - name: inTime
+        type: long
+        title: 上线时间（秒），0 为不自动上线
+        index: desc
+      - name: endTime
+        type: long
+        title: 下线线时间（秒），0 为不自动下线
+        index: desc
+      - name: count
+        type: int
+        title: 数量
+      - name: options
+        type: object
+        title: 其他属性
+      - name: status
+        type: int
+        index: asc
+        title: 状态 0（未上线） 200（已上线） 300（已下线）
+      - name: mtime
+        type: long
+        title: 修改时间
+      - name: ctime
+        type: long
+        title: 创建时间
+
+  User:
+    title: 用户
+    name: user
+    type: db
+    fields:
+      - name: uid
+        type: long
+        title: 用户ID
+        index: asc
+      - name: appid
+        type: string
+        title: 第三方应用ID
+        index: asc
+        length: 64
+      - name: openid
+        type: string
+        title: 第三方用户ID
+        index: asc
+        length: 128
+      - name: phone
+        type: string
+        title: 手机号
+        index: asc
+        length: 32
+      - name: pid
+        type: long
+        title: 项目ID
+        index: asc
+      - name: options
+        type: object
+        title: 其他属性
+      - name: atime
+        type: long
+        title: 最后加入时间
+      - name: ctime
+        type: long
+        title: 创建时间
+  

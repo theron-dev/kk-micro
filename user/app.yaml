@@ -1,0 +1,186 @@
+
+title: 用户服务
+type: kk/micro
+
+services:
+  User:
+    title: 用户
+    tasks:
+      Create:
+        title: 创建
+        name: /user/create
+        input:
+          - name: name
+            type: string
+            title: 用户名
+          - name: password
+            type: string
+            title: 密码
+        output:
+          - name: user
+            type: User
+            omitempty: true
+            title: 用户
+      Set:
+        title: 修改
+        name: /user/set
+        input:
+          - name: id
+            type: long
+            title: 用户ID
+          - name: name
+            type: string
+            title: 用户名
+          - name: password
+            type: string
+            title: 密码
+        output:
+          - name: user
+            type: User
+            omitempty: true
+            title: 用户
+      Get:
+        title: 获取
+        name: /user/get
+        input:
+          - name: id
+            type: long
+            title: 用户ID
+          - name: name
+            type: string
+            title: 用户名
+          - name: autocreate
+            type: bool
+            title: 自动创建
+        output:
+          - name: user
+            type: User
+            omitempty: true
+            title: 用户
+      Password:
+        title: 修改密码
+        name: /user/password
+        input:
+          - name: id
+            type: long
+            title: 用户ID
+          - name: password
+            type: string
+            title: 密码
+        output:
+          - name: user
+            type: User
+            omitempty: true
+            title: 用户
+      Login:
+        title: 登录
+        name: /user/login
+        input:
+          - name: name
+            type: string
+            title: 用户名
+          - name: password
+            type: string
+            title: 密码
+        output:
+          - name: user
+            type: User
+            omitempty: true
+            title: 用户
+      Query:
+        title: 登录
+        name: /user/query
+        type: query
+        input:
+          - name: id
+            type: long
+            title: 用户ID
+          - name: name
+            type: string
+            title: 用户名
+          - name: orderBy
+            type: string
+            title: 排序 desc(降序 默认) asc
+        output:
+          - name: users
+            type: User[]
+            omitempty: true
+            title: 用户
+      Options:
+        title: 获取用户选项
+        name: /user/options/get
+        input:
+          - name: uid
+            type: long
+            title: 用户ID
+          - name: name
+            type: string
+            title: 选项名
+        output:
+          - name: options
+            type: object
+            omitempty: true
+            title: 选项
+      OptionsSet:
+        title: 设置用户选项
+        name: /user/options/set
+        input:
+          - name: uid
+            type: long
+            title: 用户ID
+          - name: name
+            type: string
+            title: 选项名
+          - name: options
+            type: object
+            title: 选项
+        output:
+          - name: options
+            type: object
+            omitempty: true
+            title: 选项
+
+objects:
+  User:
+    title: 用户表
+    name: user
+    type: db
+    fields:
+      - name: name
+        type: string
+        length: 255
+        title: 用户名
+        index: asc
+      - name: password
+        type: string
+        length: 64
+        title: 密码
+        output: false
+      - name: atime
+        type: long
+        title: 最后登录时间
+      - name: mtime
+        type: long
+        title: 修改时间
+      - name: ctime
+        type: long
+        title: 创建时间
+
+  Options:
+    title: 选项
+    name: user_options
+    type: db
+    fields:
+      - name: uid
+        type: long
+        title: 用户ID
+        index: asc
+      - name: name
+        type: string
+        length: 64
+        title: 选项名
+        index: asc
+      - name: options
+        type: object
+        title: 选项
+

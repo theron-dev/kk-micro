@@ -12,8 +12,6 @@ type QueryTaskResult struct {
 }
 
 type QueryTask struct {
-	Task
-
 	PageIndex int64 `json:"p" title:"分页位置"`
 	PageSize  int64 `json:"size" title:"分页大小"`
 	Counter   bool  `json:"counter" title:"是否返回计数"`
