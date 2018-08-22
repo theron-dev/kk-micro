@@ -1,0 +1,62 @@
+{
+	"auth": {
+		"phone": {
+			"name": "phone",
+			"type": "string",
+			"length": 64,
+			"title": "手机号"
+		},
+		"deviceId": {
+			"name": "deviceId",
+			"type": "string",
+			"length": 64,
+			"title": "设备ID"
+		},
+		"ctime": {
+			"name": "ctime",
+			"type": "long",
+			"title": "创建时间"
+		},
+		"uid": {
+			"name": "uid",
+			"type": "long",
+			"title": "用户ID"
+		},
+		"code": {
+			"index": "asc",
+			"title": "授权码",
+			"name": "code",
+			"type": "string",
+			"length": 32
+		},
+		"openid": {
+			"name": "openid",
+			"type": "string",
+			"length": 128,
+			"title": "第三方用户ID"
+		},
+		"expires": {
+			"name": "expires",
+			"type": "long",
+			"title": "超时秒数"
+		},
+		"options": {
+			"name": "options",
+			"type": "object",
+			"title": "其他属性",
+			"omitempty": true
+		},
+		"atime": {
+			"name": "atime",
+			"type": "long",
+			"title": "访问时间"
+		},
+		"name": {
+			"name": "name",
+			"type": "string",
+			"length": 64,
+			"index": "asc",
+			"title": "名称"
+		}
+	}
+}

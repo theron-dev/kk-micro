@@ -1,0 +1,53 @@
+{
+	"user": {
+		"name": {
+			"name": "name",
+			"type": "string",
+			"length": 255,
+			"title": "用户名",
+			"index": "asc"
+		},
+		"password": {
+			"name": "password",
+			"type": "string",
+			"length": 64,
+			"title": "密码",
+			"output": false
+		},
+		"atime": {
+			"name": "atime",
+			"type": "long",
+			"title": "最后登录时间"
+		},
+		"mtime": {
+			"name": "mtime",
+			"type": "long",
+			"title": "修改时间"
+		},
+		"ctime": {
+			"name": "ctime",
+			"type": "long",
+			"title": "创建时间"
+		}
+	},
+	"user_options": {
+		"uid": {
+			"index": "asc",
+			"name": "uid",
+			"type": "long",
+			"title": "用户ID"
+		},
+		"name": {
+			"name": "name",
+			"type": "string",
+			"length": 64,
+			"title": "选项名",
+			"index": "asc"
+		},
+		"options": {
+			"name": "options",
+			"type": "object",
+			"title": "选项"
+		}
+	}
+}
