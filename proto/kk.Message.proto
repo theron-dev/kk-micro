@@ -1,0 +1,35 @@
+
+syntax = "proto3";
+
+package kk;
+
+message Message {
+	
+	/**
+	 * 消息ID
+	 */
+	int64 id = 1;	
+
+    /**
+	 * 来源消息ID
+	 */
+	int64 fid = 2;
+	
+    /**
+	 * 任务类型
+	 */
+    string name = 3;
+
+	/**
+	  * 内容类型
+	  * @type {string}
+	  */
+	string content_type = 4;
+
+    /**
+	  * 内容
+	  * @type {bytes}
+	  */
+	bytes content = 5;
+
+}

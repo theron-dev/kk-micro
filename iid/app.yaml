@@ -1,0 +1,16 @@
+
+title: IID服务
+type: kk/micro
+
+services:
+  IID:
+    title: IID服务
+    tasks:
+      Get:
+        title: 获取IID
+        name: iid/get
+        output:
+          - name: iid
+            title: IID
+            type: long
+      

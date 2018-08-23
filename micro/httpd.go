@@ -2,20 +2,16 @@ package micro
 
 import (
 	"bytes"
-	"encoding/json"
-	"log"
 	"net/http"
 	"strings"
 
 	"github.com/go-yaml/yaml"
-	"github.com/hailongz/kk-lib/dynamic"
+	"github.com/hailongz/kk-lib/json"
 )
 
 func HandleFunc(A IApp) func(http.ResponseWriter, *http.Request) {
 
 	return func(w http.ResponseWriter, r *http.Request) {
-
-		log.Println(r.RequestURI)
 
 		prefix := A.GetPrefix()
 
@@ -28,26 +24,21 @@ func HandleFunc(A IApp) func(http.ResponseWriter, *http.Request) {
 
 				name := r.URL.Path[len(prefix) : len(r.URL.Path)-5]
 
-				log.Println(name)
-
 				task := A.NewTask(name)
 
 				if task != nil {
 
-					var inputData interface{} = nil
 					var body = bytes.NewBuffer(nil)
 					_, _ = body.ReadFrom(r.Body)
 					defer r.Body.Close()
 
 					err := func() error {
 
-						err := json.Unmarshal(body.Bytes(), &inputData)
+						err := json.Unmarshal(body.Bytes(), task)
 
 						if err != nil {
 							return err
 						}
-
-						dynamic.SetValue(task, inputData)
 
 						return A.Handle(task)
 
@@ -92,8 +83,8 @@ func HandleFunc(A IApp) func(http.ResponseWriter, *http.Request) {
 				baseURI := ""
 				prefix := A.GetPrefix()
 
-				if prefix == "/" {
-					prefix = ""
+				if strings.HasSuffix(prefix, "/") {
+					prefix = prefix[0 : len(prefix)-1]
 				}
 
 				if strings.HasPrefix(r.Proto, "HTTPS/") {
@@ -105,7 +96,7 @@ func HandleFunc(A IApp) func(http.ResponseWriter, *http.Request) {
 				r := GetDocRAML(A, baseURI)
 
 				b, _ := yaml.Marshal(r)
-				w.Header().Add("Content-Type", "text/yaml; charset=utf-8")
+				w.Header().Add("Content-Type", "text/raml; charset=utf-8")
 				w.Write([]byte("#%RAML 0.8\r\n\r\n"))
 				w.Write(b)
 

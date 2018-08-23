@@ -2,6 +2,7 @@ package micro
 
 import (
 	"database/sql"
+	"sync"
 	"time"
 
 	"github.com/hailongz/kk-lib/dynamic"
@@ -31,6 +32,7 @@ func (T *DBOpenTask) GetResult() interface{} {
 }
 
 type DBService struct {
+	lock  sync.Mutex
 	conns map[string]DBOpenTaskResult
 }
 
@@ -40,17 +42,21 @@ func (S *DBService) GetTitle() string {
 
 func (S *DBService) HandleDBOpenTask(app IApp, task *DBOpenTask) error {
 
-	if S.conns == nil {
-		S.conns = map[string]DBOpenTaskResult{}
-	}
-
 	name := task.Name
 
 	if name == "" {
 		name = "db"
 	}
 
+	S.lock.Lock()
+
+	if S.conns == nil {
+		S.conns = map[string]DBOpenTaskResult{}
+	}
+
 	rs, ok := S.conns[name]
+
+	S.lock.Unlock()
 
 	if ok {
 		task.Result = rs
@@ -80,7 +86,9 @@ func (S *DBService) HandleDBOpenTask(app IApp, task *DBOpenTask) error {
 
 	rs = DBOpenTaskResult{dynamic.StringValue(dynamic.Get(config, "prefix"), ""), conn}
 
+	S.lock.Lock()
 	S.conns[name] = rs
+	S.lock.Unlock()
 
 	task.Result = rs
 

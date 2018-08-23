@@ -179,9 +179,9 @@ func GetTaskDocRAML(t reflect.Type) interface{} {
 
 	post["description"] = task.GetTitle()
 
-	post["body"] = map[string]interface{}{"schema": GetStructDocSchemaRAML(t), "example": GetStructDocExampleStringRAML(t)}
+	post["body"] = map[string]interface{}{"application/json": map[string]interface{}{"schema": GetStructDocSchemaRAML(t), "example": GetStructDocExampleStringRAML(t)}}
 
-	post["responses"] = map[string]interface{}{"200": map[string]interface{}{"body": map[string]interface{}{"schema": GetStructDocSchemaRAML(reflect.TypeOf(r)), "example": GetStructDocExampleStringRAML(reflect.TypeOf(r))}}}
+	post["responses"] = map[string]interface{}{"200": map[string]interface{}{"body": map[string]interface{}{"application/json": map[string]interface{}{"schema": GetStructDocSchemaRAML(reflect.TypeOf(r)), "example": GetStructDocExampleStringRAML(reflect.TypeOf(r))}}}}
 
 	v["post"] = post
 
@@ -197,7 +197,7 @@ func GetDocRAML(app IApp, uri string) interface{} {
 	v["mediaType"] = "application/json"
 
 	app.Each(func(name string, taskType reflect.Type) bool {
-		v[name+".json"] = GetTaskDocRAML(taskType)
+		v["/"+name+".json"] = GetTaskDocRAML(taskType)
 		return true
 	})
 

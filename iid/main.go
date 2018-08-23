@@ -8,7 +8,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/hailongz/kk-lib/dynamic"
 	"github.com/hailongz/kk-lib/kk"
-	"github.com/hailongz/kk-micro/auth/app"
+	"github.com/hailongz/kk-micro/iid/app"
 	"github.com/hailongz/kk-micro/micro"
 )
 
@@ -34,7 +34,7 @@ func main() {
 
 		address := dynamic.StringValue(dynamic.Get(a.Config(), "address"), ":80")
 
-		http.HandleFunc(a.GetPrefix(), micro.HttpFunc(a))
+		http.HandleFunc(a.GetPrefix(), micro.HandleFunc(a))
 
 		log.Println("httpd " + address)
 
