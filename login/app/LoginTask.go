@@ -8,9 +8,6 @@ type /*B(Result)*/ LoginTaskResult /*E(Result)*/ struct {
 	/*E(Result.Base)*/
 
 	/*B(Output)*/ /*E(Output)*/
-	/*B(Output.user)*/
-	User *User `json:"user,omitempty" title:"用户"`
-	/*E(Output.user)*/
 }
 
 type /*B(Task)*/ LoginTask /*E(Task)*/ struct {
@@ -22,7 +19,7 @@ type /*B(Task)*/ LoginTask /*E(Task)*/ struct {
 	Password string `json:"password" title:"密码"`
 	/*E(Input.password)*/
 	/*B(Input.name)*/
-	Name string `json:"name" title:"用户名"`
+	Name string `json:"name" title:"登录名"`
 	/*E(Input.name)*/
 
 	/*B(Task.Result)*/
@@ -32,7 +29,7 @@ type /*B(Task)*/ LoginTask /*E(Task)*/ struct {
 
 /*B(name)*/
 func (T *LoginTask) GetName() string {
-	return "user/login"
+	return "login"
 }
 
 /*E(name)*/

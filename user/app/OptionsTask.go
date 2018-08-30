@@ -32,7 +32,7 @@ type /*B(Task)*/ OptionsTask /*E(Task)*/ struct {
 
 /*B(name)*/
 func (T *OptionsTask) GetName() string {
-	return "/user/options/get"
+	return "user/options/get"
 }
 
 /*E(name)*/

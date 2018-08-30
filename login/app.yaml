@@ -1,0 +1,142 @@
+
+title: 登录服务
+type: kk/micro
+
+services:
+  Login:
+    title: 登录服务
+    tasks:
+      Login:
+        title: 登录
+        name: login
+        input:
+          - name: name
+            type: string
+            title: 登录名
+          - name: password
+            type: string
+            title: 密码
+
+  Auth:
+    title: 验证源
+    tasks:
+      Create:
+        title: 创建
+        name: auth/create
+        input:
+          - name: title
+            type: string
+            title: 说明
+          - name: type
+            type: string
+            title: 类型
+          - name: pattern
+            type: string
+            title: 匹配正则
+          - name: enabled
+            type: boolean
+            title: 是否可用
+          - name: options
+            type: object
+            title: 配置选项
+        output:
+          - name: auth
+            type: Auth
+            omitempty: true
+            title: 验证源
+      Set:
+        title: 修改
+        name: auth/set
+        input:
+          - name: id
+            type: long
+            title: 验证源ID
+          - name: title
+            type: string
+            title: 说明
+          - name: type
+            type: string
+            title: 类型
+          - name: pattern
+            type: string
+            title: 匹配正则
+          - name: enabled
+            type: object
+            title: 是否可用
+          - name: options
+            type: object
+            title: 配置选项
+        output:
+          - name: auth
+            type: Auth
+            omitempty: true
+            title: 验证源
+      Get:
+        title: 获取
+        name: auth/get
+        input:
+          - name: id
+            type: long
+            title: 验证源ID
+        output:
+          - name: auth
+            type: Auth
+            omitempty: true
+            title: 验证源
+      Remove:
+        title: 删除
+        name: auth/remove
+        input:
+          - name: id
+            type: long
+            title: 验证源ID
+        output:
+          - name: auth
+            type: Auth
+            omitempty: true
+            title: 验证源
+      Query:
+        title: 查询用户
+        name: auth/query
+        type: query
+        input:
+          - name: id
+            type: long
+            title: 验证源ID
+          - name: type
+            type: string
+            title: 类型
+          - name: orderBy
+            type: string
+            title: 排序 desc(降序 默认) asc
+        output:
+          - name: auths
+            type: Auth[]
+            omitempty: true
+            title: 验证源
+
+objects:
+  Auth:
+    title: 登录验证
+    name: auth
+    type: db
+    fields:
+      - name: title
+        type: string
+        length: 255
+        title: 说明
+      - name: type
+        type: string
+        length: 64
+        title: 类型
+        index: asc
+      - name: pattern
+        type: string
+        length: 255
+        title: 匹配正则
+      - name: enabled
+        type: boolean
+        title: 是否可用
+      - name: options
+        type: object
+        title: 配置选项

@@ -1,0 +1,7 @@
+package app
+
+const (
+	ERROR_NOT_FOUND    = 10001
+	ERROR_NOT_FOUND_ID = 10002
+	ERROR_AUTH_SOURCE  = 10003
+)

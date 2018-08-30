@@ -35,7 +35,7 @@ type /*B(Task)*/ OptionsSetTask /*E(Task)*/ struct {
 
 /*B(name)*/
 func (T *OptionsSetTask) GetName() string {
-	return "/user/options/set"
+	return "user/options/set"
 }
 
 /*E(name)*/

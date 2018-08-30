@@ -2,10 +2,18 @@ package app
 
 import (
 	"bytes"
+	"crypto/tls"
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
+	"net/smtp"
+	"strings"
 	"time"
+
+	"gopkg.in/goose.v2/client"
+	"gopkg.in/goose.v2/identity"
+	"gopkg.in/ldap.v2"
 
 	"github.com/hailongz/kk-lib/db"
 	"github.com/hailongz/kk-lib/dynamic"
@@ -75,12 +83,12 @@ func (S *UserService) HandleOptionsTask(a micro.IApp, task *OptionsTask) error {
 }
 
 /*B(Handle.Query)*/
-/*登录*/
+/*查询用户*/
 func (S *UserService) HandleQueryTask(a micro.IApp, task *QueryTask) error {
 	/*E(Handle.Query)*/
 	//TODO
 
-	conn, prefix, err := micro.DBOpen(a, "db")
+	conn, prefix, err := micro.DBOpen(a, "dbr")
 
 	if err != nil {
 		return err
@@ -166,6 +174,142 @@ func (S *UserService) HandleQueryTask(a micro.IApp, task *QueryTask) error {
 	return nil
 }
 
+type LoginSMTPAuth struct {
+	Username string
+	Password string
+}
+
+func (a *LoginSMTPAuth) Start(server *smtp.ServerInfo) (string, []byte, error) {
+	return "LOGIN", []byte{}, nil
+}
+
+func (a *LoginSMTPAuth) Next(fromServer []byte, more bool) ([]byte, error) {
+	if more {
+		switch string(fromServer) {
+		case "Username:":
+			return []byte(a.Username), nil
+		case "Password:":
+			return []byte(a.Password), nil
+		default:
+			return nil, errors.New("Unkown fromServer")
+		}
+	}
+	return nil, nil
+}
+
+func loginLDAP(domain string, addr string, TLS bool, task *LoginTask, timeout time.Duration) error {
+
+	var conn *ldap.Conn = nil
+	var err error = nil
+
+	if TLS {
+		conn, err = ldap.DialTLS("tcp", addr, &tls.Config{
+			InsecureSkipVerify: true,
+		})
+	} else {
+		conn, err = ldap.Dial("tcp", addr)
+	}
+
+	if err != nil {
+		return err
+	}
+
+	defer conn.Close()
+
+	err = conn.Bind(task.Name, task.Password)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func loginExchange(domain string, addr string, TLS bool, task *LoginTask, timeout time.Duration) error {
+
+	url := "http://" + addr
+
+	if TLS {
+		url = "https://" + addr
+	}
+
+	cred := identity.Credentials{
+		URL:     url,
+		User:    task.Name,
+		Secrets: task.Password,
+		Region:  domain,
+	}
+
+	cli := client.NewClient(&cred, identity.AuthUserPass, nil)
+
+	err := cli.Authenticate()
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func loginSMTP(domain string, addr string, TLS bool, task *LoginTask, timeout time.Duration) error {
+
+	auth := &LoginSMTPAuth{Username: task.Name, Password: task.Password}
+
+	cli, err := smtp.Dial(addr)
+
+	if err != nil {
+		return err
+	}
+
+	defer cli.Close()
+
+	if TLS {
+
+		err = cli.StartTLS(&tls.Config{
+			InsecureSkipVerify: true,
+		})
+
+		if err != nil {
+			return err
+		}
+	}
+
+	isClose := false
+
+	ch := make(chan bool, 2)
+
+	defer close(ch)
+
+	go func() {
+
+		err = cli.Auth(auth)
+
+		if !isClose {
+			isClose = true
+			ch <- true
+		}
+
+	}()
+
+	go func() {
+		time.Sleep(timeout)
+		if !isClose {
+			isClose = true
+			ch <- false
+		}
+	}()
+
+	if <-ch {
+		if err != nil {
+			return err
+		}
+	} else {
+		return errors.New("验证失败")
+	}
+
+	return nil
+}
+
 /*B(Handle.Login)*/
 /*登录*/
 func (S *UserService) HandleLoginTask(a micro.IApp, task *LoginTask) error {
@@ -178,6 +322,106 @@ func (S *UserService) HandleLoginTask(a micro.IApp, task *LoginTask) error {
 
 	if task.Password == "" {
 		return micro.NewError(ERROR_USER_NOT_FOUND_PASSWORD, "未找到密码")
+	}
+
+	var err error = nil
+	var user *User = nil
+
+	dynamic.Each(dynamic.Get(a.Config(), "protocol"), func(key interface{}, item interface{}) bool {
+
+		suffix := dynamic.StringValue(dynamic.Get(item, "suffix"), "")
+
+		log.Println(">>", suffix, task.Name)
+
+		if suffix != "" && strings.HasSuffix(task.Name, suffix) {
+
+			stype := dynamic.StringValue(dynamic.Get(item, "type"), "")
+
+			log.Println(">>", suffix, task.Name, stype)
+
+			if stype == "SMTP" {
+
+				err = loginSMTP(dynamic.StringValue(dynamic.Get(item, "domain"), ""),
+					dynamic.StringValue(dynamic.Get(item, "addr"), ""),
+					dynamic.BooleanValue(dynamic.Get(item, "TLS"), false), task,
+					time.Duration(dynamic.IntValue(dynamic.Get(item, "timeout"), 2))*time.Second)
+
+				if err != nil {
+					return false
+				}
+
+				t := GetTask{}
+				t.Name = task.Name
+				t.Autocreate = true
+				err = a.Handle(&t)
+
+				if err != nil {
+					return false
+				}
+
+				user = t.Result.User
+
+				return false
+			} else if stype == "LDAP" {
+
+				err = loginLDAP(dynamic.StringValue(dynamic.Get(item, "domain"), ""),
+					dynamic.StringValue(dynamic.Get(item, "addr"), ""),
+					dynamic.BooleanValue(dynamic.Get(item, "TLS"), false), task,
+					time.Duration(dynamic.IntValue(dynamic.Get(item, "timeout"), 2))*time.Second)
+
+				if err != nil {
+					return false
+				}
+
+				t := GetTask{}
+				t.Name = task.Name
+				t.Autocreate = true
+				err = a.Handle(&t)
+
+				if err != nil {
+					return false
+				}
+
+				user = t.Result.User
+
+				return false
+			} else if stype == "EXCHANGE" {
+
+				err = loginExchange(dynamic.StringValue(dynamic.Get(item, "domain"), ""),
+					dynamic.StringValue(dynamic.Get(item, "addr"), ""),
+					dynamic.BooleanValue(dynamic.Get(item, "TLS"), false), task,
+					time.Duration(dynamic.IntValue(dynamic.Get(item, "timeout"), 2))*time.Second)
+
+				if err != nil {
+					return false
+				}
+
+				t := GetTask{}
+				t.Name = task.Name
+				t.Autocreate = true
+				err = a.Handle(&t)
+
+				if err != nil {
+					return false
+				}
+
+				user = t.Result.User
+
+				return false
+			}
+
+		}
+
+		return true
+	})
+
+	if err != nil {
+		return err
+	}
+
+	if user != nil {
+		task.Result.User = user
+		return nil
 	}
 
 	conn, prefix, err := micro.DBOpen(a, "db")
@@ -293,7 +537,7 @@ func (S *UserService) HandleGetTask(a micro.IApp, task *GetTask) error {
 		return micro.NewError(ERROR_USER_NOT_FOUND_UID, "未找到用户ID")
 	}
 
-	conn, prefix, err := micro.DBOpen(a, "db")
+	conn, prefix, err := micro.DBOpen(a, "dbr")
 
 	if err != nil {
 		return err

@@ -10,9 +10,9 @@ type /*B(Result)*/ QueryTaskResult /*E(Result)*/ struct {
 	/*E(Result.Base)*/
 
 	/*B(Output)*/ /*E(Output)*/
-	/*B(Output.users)*/
-	Users []User `json:"users,omitempty" title:"用户"`
-	/*E(Output.users)*/
+	/*B(Output.auths)*/
+	Auths []Auth `json:"auths,omitempty" title:"验证源"`
+	/*E(Output.auths)*/
 }
 
 type /*B(Task)*/ QueryTask /*E(Task)*/ struct {
@@ -24,11 +24,11 @@ type /*B(Task)*/ QueryTask /*E(Task)*/ struct {
 	/*B(Input.orderBy)*/
 	OrderBy string `json:"orderBy" title:"排序 desc(降序 默认) asc"`
 	/*E(Input.orderBy)*/
-	/*B(Input.name)*/
-	Name string `json:"name" title:"用户名"`
-	/*E(Input.name)*/
+	/*B(Input.type)*/
+	Type string `json:"type" title:"类型"`
+	/*E(Input.type)*/
 	/*B(Input.id)*/
-	Id int64 `json:"id" title:"用户ID"`
+	Id int64 `json:"id" title:"验证源ID"`
 	/*E(Input.id)*/
 
 	/*B(Task.Result)*/
@@ -38,7 +38,7 @@ type /*B(Task)*/ QueryTask /*E(Task)*/ struct {
 
 /*B(name)*/
 func (T *QueryTask) GetName() string {
-	return "user/query"
+	return "auth/query"
 }
 
 /*E(name)*/

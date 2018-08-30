@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/go-yaml/yaml"
 	"github.com/hailongz/kk-lib/json"
+	"gopkg.in/yaml.v2"
 )
 
 func HandleFunc(A IApp) func(http.ResponseWriter, *http.Request) {

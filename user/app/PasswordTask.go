@@ -32,7 +32,7 @@ type /*B(Task)*/ PasswordTask /*E(Task)*/ struct {
 
 /*B(name)*/
 func (T *PasswordTask) GetName() string {
-	return "/user/password"
+	return "user/password"
 }
 
 /*E(name)*/

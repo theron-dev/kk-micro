@@ -1,0 +1,33 @@
+{
+	"auth": {
+		"title": {
+			"name": "title",
+			"type": "string",
+			"length": 255,
+			"title": "说明"
+		},
+		"type": {
+			"name": "type",
+			"type": "string",
+			"length": 64,
+			"title": "类型",
+			"index": "asc"
+		},
+		"pattern": {
+			"length": 255,
+			"title": "匹配正则",
+			"name": "pattern",
+			"type": "string"
+		},
+		"enabled": {
+			"name": "enabled",
+			"type": "boolean",
+			"title": "是否可用"
+		},
+		"options": {
+			"type": "object",
+			"title": "配置选项",
+			"name": "options"
+		}
+	}
+}

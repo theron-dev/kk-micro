@@ -17,14 +17,14 @@ func Open(app micro.IApp) micro.IApp {
 	/*B(App.Service.User)*/
 	{
 		s := UserService{}
-		app.Use(&OptionsTask{}, &s)
-		app.Use(&OptionsSetTask{}, &s)
-		app.Use(&CreateTask{}, &s)
-		app.Use(&SetTask{}, &s)
-		app.Use(&GetTask{}, &s)
-		app.Use(&PasswordTask{}, &s)
-		app.Use(&LoginTask{}, &s)
-		app.Use(&QueryTask{}, &s)
+		app.Use(&QueryTask{},&s)
+		app.Use(&OptionsTask{},&s)
+		app.Use(&OptionsSetTask{},&s)
+		app.Use(&CreateTask{},&s)
+		app.Use(&SetTask{},&s)
+		app.Use(&GetTask{},&s)
+		app.Use(&PasswordTask{},&s)
+		app.Use(&LoginTask{},&s)
 	}
 	/*E(App.Service.User)*/
 

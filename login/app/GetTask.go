@@ -8,9 +8,9 @@ type /*B(Result)*/ GetTaskResult /*E(Result)*/ struct {
 	/*E(Result.Base)*/
 
 	/*B(Output)*/ /*E(Output)*/
-	/*B(Output.user)*/
-	User *User `json:"user,omitempty" title:"用户"`
-	/*E(Output.user)*/
+	/*B(Output.auth)*/
+	Auth *Auth `json:"auth,omitempty" title:"验证源"`
+	/*E(Output.auth)*/
 }
 
 type /*B(Task)*/ GetTask /*E(Task)*/ struct {
@@ -18,14 +18,8 @@ type /*B(Task)*/ GetTask /*E(Task)*/ struct {
 	/*E(Task.Base)*/
 
 	/*B(Input)*/ /*E(Input)*/
-	/*B(Input.autocreate)*/
-	Autocreate bool `json:"autocreate" title:"自动创建"`
-	/*E(Input.autocreate)*/
-	/*B(Input.name)*/
-	Name string `json:"name" title:"用户名"`
-	/*E(Input.name)*/
 	/*B(Input.id)*/
-	Id int64 `json:"id" title:"用户ID"`
+	Id int64 `json:"id" title:"验证源ID"`
 	/*E(Input.id)*/
 
 	/*B(Task.Result)*/
@@ -35,7 +29,7 @@ type /*B(Task)*/ GetTask /*E(Task)*/ struct {
 
 /*B(name)*/
 func (T *GetTask) GetName() string {
-	return "user/get"
+	return "auth/get"
 }
 
 /*E(name)*/
