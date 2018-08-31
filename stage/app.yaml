@@ -1,0 +1,173 @@
+
+title: 阶段
+type: kk/micro
+       
+services:
+  Stage:
+    title: 阶段服务
+    tasks:
+      StageCreate:
+        title: 创建
+        name: stage/create
+        input:
+          - name: title
+            type: string
+            title: 说明
+          - name: endTime
+            type: long
+            title: 结束时间
+          - name: type
+            type: int
+            title: 类型
+          - name: status
+            type: int
+            title: 状态
+          - name: eid
+            type: long
+            title: 实体ID
+          - name: options
+            type: object
+            title: 其他数据
+        output:
+          - name: stage
+            type: Stage
+            omitempty: true
+            title: 阶段
+      StageSet:
+        title: 修改
+        name: stage/set
+        input:
+          - name: id
+            type: long
+            title: 阶段ID
+          - name: title
+            type: string
+            title: 说明
+          - name: endTime
+            type: object
+            title: 结束时间
+          - name: type
+            type: object
+            title: 类型
+          - name: status
+            type: object
+            title: 状态
+          - name: eid
+            type: object
+            title: 实体ID
+          - name: options
+            type: object
+            title: 其他数据
+        output:
+          - name: stage
+            type: Stage
+            omitempty: true
+            title: 阶段
+      StageRemove:
+        title: 删除
+        name: stage/remove
+        input:
+          - name: id
+            type: long
+            title: 阶段ID
+        output:
+          - name: stage
+            type: Stage
+            omitempty: true
+            title: 阶段
+      StageClear:
+        title: 清理
+        name: stage/clear
+        input:
+          - name: eid
+            type: long
+            title: 实体ID
+      StageGet:
+        title: 获取
+        name: stage/get
+        input:
+          - name: id
+            type: long
+            title: 阶段ID
+        output:
+          - name: stage
+            type: Stage
+            omitempty: true
+            title: 阶段
+      StageNear:
+        title: 接近
+        name: stage/near
+        input:
+          - name: eid
+            type: long
+            title: 实体ID
+          - name: type
+            type: object
+            title: 类型
+          - name: status
+            type: object
+            title: 状态
+        output:
+          - name: stage
+            type: Stage
+            omitempty: true
+            title: 阶段
+      StageQuery:
+        title: 查询
+        name: stage/query
+        type: query
+        input:
+          - name: id
+            type: long
+            title: 阶段ID
+          - name: eid
+            type: long
+            title: 实体ID
+          - name: type
+            type: string
+            title: 类型 多个逗号分割
+          - name: status
+            type: string
+            title: 状态 多个逗号分割
+          - name: orderBy
+            type: string
+            title: 排序 endTime(结束时间升序 默认) desc(降序) asc
+        output:
+          - name: stages
+            type: Stage[]
+            omitempty: true
+            title: 阶段
+        
+objects:
+  Stage:
+    title: 阶段
+    name: stage
+    type: db
+    fields:
+      - name: title
+        type: string
+        length: 255
+        title: 说明
+      - name: endTime
+        type: long
+        title: 结束时间
+        index: asc
+      - name: type
+        type: int
+        title: 类型
+        index: asc
+      - name: status
+        type: int
+        title: 状态
+        index: asc
+      - name: eid
+        type: long
+        title: 实体ID
+        index: asc
+      - name: options
+        type: object
+        title: 其他数据
+      - name: ctime
+        type: long
+        title: 创建时间
+  
