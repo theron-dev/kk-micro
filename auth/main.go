@@ -34,7 +34,7 @@ func main() {
 
 		address := dynamic.StringValue(dynamic.Get(a.Config(), "address"), ":80")
 
-		http.HandleFunc(a.GetPrefix(), micro.HttpFunc(a))
+		http.HandleFunc(a.GetPrefix(), micro.HandleFunc(a))
 
 		log.Println("httpd " + address)
 

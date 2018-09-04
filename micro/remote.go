@@ -3,7 +3,6 @@ package micro
 import (
 	"encoding/json"
 	"errors"
-	"log"
 	"sync"
 
 	"github.com/hailongz/kk-lib/dynamic"
@@ -15,25 +14,27 @@ type IRemote interface {
 }
 
 type HttpRemote struct {
-	baseURL string
+	baseURL     string
+	contentType string
 }
 
-func NewHttpRemote(baseURL string) *HttpRemote {
+func NewHttpRemote(baseURL string, contentType string) *HttpRemote {
 	v := HttpRemote{}
 	v.baseURL = baseURL
+	v.contentType = contentType
 	return &v
 }
 
 func (R *HttpRemote) Handle(task ITask) error {
 
 	options := http.Options{}
-	options.Type = http.OptionTypeJson
+	options.Type = R.contentType
 	options.ResponseType = http.OptionResponseTypeByte
 	options.Method = "POST"
 	options.Data = task
 	options.Url = R.baseURL + task.GetName() + ".json"
 
-	log.Println("[HTTP]", options.Url)
+	// log.Println("[HTTP]", options.Url, options.Data)
 
 	data, err := http.Send(&options)
 
@@ -41,15 +42,25 @@ func (R *HttpRemote) Handle(task ITask) error {
 		return err
 	}
 
-	log.Println("[HTTP]", string(data.([]byte)))
+	// log.Println("[HTTP]", string(data.([]byte)))
 
 	r := task.GetResult()
 
 	if r != nil && data != nil {
-		err = json.Unmarshal(data.([]byte), r)
+		var v interface{} = nil
+		err = json.Unmarshal(data.([]byte), &v)
 		if err != nil {
 			return err
 		}
+
+		errno := dynamic.IntValue(dynamic.Get(v, "errno"), 0)
+
+		if errno == 0 {
+			dynamic.SetValue(r, v)
+		} else {
+			return NewError(int32(errno), dynamic.StringValue(dynamic.Get(v, "errmsg"), ""))
+		}
+
 	}
 
 	return nil
@@ -104,7 +115,7 @@ func (S *RemoteService) HandleRemoteTask(app IApp, task *RemoteTask) error {
 		stype := dynamic.StringValue(dynamic.Get(v, "type"), "http")
 
 		if stype == "http" {
-			remote = NewHttpRemote(dynamic.StringValue(dynamic.Get(v, "baseURL"), ""))
+			remote = NewHttpRemote(dynamic.StringValue(dynamic.Get(v, "baseURL"), ""), dynamic.StringValue(dynamic.Get(v, "contentType"), http.OptionTypeJson))
 		} else {
 			return errors.New("不支持的远程服务类型 " + stype)
 		}
