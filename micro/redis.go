@@ -1,8 +1,8 @@
 package micro
 
 import (
-	"github.com/go-redis/redis"
 	"github.com/hailongz/kk-lib/dynamic"
+	"gopkg.in/redis.v5"
 )
 
 type RedisOpenTaskResult struct {

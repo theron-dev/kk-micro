@@ -120,7 +120,7 @@ func (S *AuthService) HandleCreateTask(a micro.IApp, task *CreateTask) error {
 	/*E(Handle.Create)*/
 	//TODO
 
-	conn, prefix, err := micro.DBOpen(a, "dbr")
+	conn, prefix, err := micro.DBOpen(a, "db")
 
 	if err != nil {
 		return err
