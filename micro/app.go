@@ -7,8 +7,8 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/go-yaml/yaml"
 	"github.com/hailongz/kk-lib/dynamic"
+	"gopkg.in/yaml.v2"
 )
 
 type IApp interface {
