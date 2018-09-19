@@ -1,0 +1,138 @@
+
+title: 异步队列
+type: kk/micro
+       
+services:
+  Item:
+    title: 异步队列服务
+    tasks:
+      Create:
+        title: 创建
+        name: create
+        input:
+          - name: title
+            type: string
+            title: 说明
+          - name: name
+            type: string
+            title: 队列名
+          - name: time
+            type: long
+            title: 执行时间
+          - name: delay
+            type: long
+            title: 重试延时时间
+          - name: maxCount
+            type: int
+            title: 最大重试次数 0为不断重试, 直到成功
+          - name: contentType
+            type: string
+            title: 执行内容类型 sh 或 kk-logic
+          - name: content
+            type: string
+            title: 执行内容
+          - name: options
+            type: object
+            title: 其他数据 sh 会生成 ENV数据 , kk-logic 会生成 params 数据
+        output:
+          - name: item
+            type: Item
+            omitempty: true
+            title: 异步队列
+      Cancel:
+        title: 取消
+        name: cancel
+        input:
+          - name: id
+            type: long
+            title: 异步队列
+        output:
+          - name: item
+            type: Item
+            omitempty: true
+            title: 异步队列
+      Get:
+        title: 获取
+        name: get
+        input:
+          - name: id
+            type: long
+            title: 异步队列
+        output:
+          - name: item
+            type: Item
+            omitempty: true
+            title: 异步队列
+      Query:
+        title: 查询
+        name: query
+        type: query
+        input:
+          - name: id
+            type: long
+            title: 异步队列
+          - name: status
+            type: string
+            title: 状态 多个逗号分割
+          - name: orderBy
+            type: string
+            title: 排序 desc(降序 默认) asc
+        output:
+          - name: items
+            type: Item[]
+            omitempty: true
+            title: 异步队列
+        
+objects:
+  Item:
+    title: 异步队列
+    name: item
+    type: db
+    fields:
+      - name: title
+        type: string
+        title: 说明
+        length: 255
+      - name: name
+        type: string
+        title: 队列名
+        length: 64
+      - name: status
+        type: int
+        title: 状态
+        index: asc
+      - name: atime
+        type: long
+        title: 最后处理时间
+        index: asc
+      - name: time
+        type: long
+        title: 执行时间
+      - name: delay
+        type: long
+        title: 重试延时时间
+      - name: maxCount
+        type: int
+        title: 最大重试次数 0为不断重试, 直到成功
+      - name: count
+        type: int
+        title: 已执行次数
+      - name: contentType
+        type: string
+        title: 执行内容类型 sh 或 kk-logic
+        length: 32
+      - name: content
+        type: string
+        title: 执行内容
+        length: -1
+      - name: options
+        type: object
+        title: 其他数据 sh 会生成 ENV数据 , kk-logic 会生成 params 数据
+      - name: errmsg
+        type: string
+        title: 错误信息
+        length: 4096
+      - name: ctime
+        type: long
+        title: 创建时间
+  

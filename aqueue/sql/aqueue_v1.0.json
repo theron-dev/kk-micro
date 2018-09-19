@@ -1,0 +1,76 @@
+{
+	"item": {
+		"title": {
+			"title": "说明",
+			"length": 255,
+			"name": "title",
+			"type": "string"
+		},
+		"name": {
+			"name": "name",
+			"type": "string",
+			"title": "队列名",
+			"length": 64
+		},
+		"status": {
+			"name": "status",
+			"type": "int",
+			"title": "状态",
+			"index": "asc"
+		},
+		"atime": {
+			"type": "long",
+			"title": "最后处理时间",
+			"index": "asc",
+			"name": "atime"
+		},
+		"delay": {
+			"name": "delay",
+			"type": "long",
+			"title": "重试延时时间"
+		},
+		"count": {
+			"title": "已执行次数",
+			"name": "count",
+			"type": "int"
+		},
+		"errmsg": {
+			"name": "errmsg",
+			"type": "string",
+			"title": "错误信息",
+			"length": 4096
+		},
+		"ctime": {
+			"name": "ctime",
+			"type": "long",
+			"title": "创建时间"
+		},
+		"time": {
+			"type": "long",
+			"title": "执行时间",
+			"name": "time"
+		},
+		"maxCount": {
+			"name": "maxCount",
+			"type": "int",
+			"title": "最大重试次数 0为不断重试, 直到成功"
+		},
+		"contentType": {
+			"name": "contentType",
+			"type": "string",
+			"title": "执行内容类型 sh 或 kk-logic",
+			"length": 32
+		},
+		"content": {
+			"title": "执行内容",
+			"length": -1,
+			"name": "content",
+			"type": "string"
+		},
+		"options": {
+			"name": "options",
+			"type": "object",
+			"title": "其他数据 sh 会生成 ENV数据 , kk-logic 会生成 params 数据"
+		}
+	}
+}
