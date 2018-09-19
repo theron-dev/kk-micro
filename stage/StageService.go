@@ -198,6 +198,11 @@ func (S *StageService) HandleStageSetTask(a micro.IApp, task *StageSetTask) erro
 			v.EndTime = dynamic.IntValue(task.EndTime, 0)
 		}
 
+		if task.Uid != nil {
+			keys["uid"] = true
+			v.EndTime = dynamic.IntValue(task.Uid, 0)
+		}
+
 		if task.Status != nil {
 			keys["status"] = true
 			v.Status = int(dynamic.IntValue(task.Status, 0))
@@ -267,6 +272,7 @@ func (S *StageService) HandleStageCreateTask(a micro.IApp, task *StageCreateTask
 
 	v.Title = task.Title
 	v.Eid = task.Eid
+	v.Uid = task.Uid
 	v.EndTime = task.EndTime
 	v.Status = task.Status
 	v.Type = task.Type
@@ -310,6 +316,11 @@ func (S *StageService) HandleStageQueryTask(a micro.IApp, task *StageQueryTask) 
 	if task.Eid != nil {
 		sql.WriteString(" AND eid=?")
 		args = append(args, task.Eid)
+	}
+
+	if task.Uid != nil {
+		sql.WriteString(" AND uid=?")
+		args = append(args, task.Uid)
 	}
 
 	if task.Type != "" {

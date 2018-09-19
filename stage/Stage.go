@@ -20,6 +20,9 @@ type /*B(Object)*/ Stage /*E(Object)*/ struct {
 	/*B(Property.eid)*/
 	Eid int64 `json:"eid" title:"实体ID" index:"asc"`
 	/*E(Property.eid)*/
+	/*B(Property.uid)*/
+	Uid int64 `json:"uid" title:"用户ID" index:"asc"`
+	/*E(Property.uid)*/
 	/*B(Property.status)*/
 	Status int `json:"status" title:"状态" index:"asc"`
 	/*E(Property.status)*/

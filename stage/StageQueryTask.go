@@ -28,6 +28,9 @@ type /*B(Task)*/ StageQueryTask /*E(Task)*/ struct {
 	/*B(Input.status)*/
 	Status string `json:"status" title:"状态 多个逗号分割"`
 	/*E(Input.status)*/
+	/*B(Input.uid)*/
+	Uid interface{} `json:"uid" title:"用户ID"`
+	/*E(Input.uid)*/
 	/*B(Input.type)*/
 	Type string `json:"type" title:"类型 多个逗号分割"`
 	/*E(Input.type)*/

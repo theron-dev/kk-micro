@@ -21,6 +21,9 @@ type /*B(Task)*/ StageNearTask /*E(Task)*/ struct {
 	/*B(Input.status)*/
 	Status interface{} `json:"status" title:"状态"`
 	/*E(Input.status)*/
+	/*B(Input.uid)*/
+	Uid int64 `json:"uid" title:"用户ID"`
+	/*E(Input.uid)*/
 	/*B(Input.type)*/
 	Type interface{} `json:"type" title:"类型"`
 	/*E(Input.type)*/

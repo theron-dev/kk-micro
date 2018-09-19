@@ -16,6 +16,9 @@ services:
           - name: endTime
             type: long
             title: 结束时间
+          - name: uid
+            type: long
+            title: 用户ID
           - name: type
             type: int
             title: 类型
@@ -40,6 +43,9 @@ services:
           - name: id
             type: long
             title: 阶段ID
+          - name: uid
+            type: object
+            title: 用户ID
           - name: title
             type: string
             title: 说明
@@ -101,6 +107,9 @@ services:
           - name: eid
             type: long
             title: 实体ID
+          - name: uid
+            type: login
+            title: 用户ID
           - name: type
             type: object
             title: 类型
@@ -120,6 +129,9 @@ services:
           - name: id
             type: long
             title: 阶段ID
+          - name: uid
+            type: login
+            title: 用户ID
           - name: eid
             type: long
             title: 实体ID
@@ -148,6 +160,10 @@ objects:
         type: string
         length: 255
         title: 说明
+      - name: uid
+        type: long
+        title: 用户ID
+        index: asc
       - name: endTime
         type: long
         title: 结束时间

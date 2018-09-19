@@ -24,6 +24,9 @@ type /*B(Task)*/ StageSetTask /*E(Task)*/ struct {
 	/*B(Input.eid)*/
 	Eid interface{} `json:"eid" title:"实体ID"`
 	/*E(Input.eid)*/
+	/*B(Input.uid)*/
+	Uid interface{} `json:"uid" title:"用户ID"`
+	/*E(Input.uid)*/
 	/*B(Input.status)*/
 	Status interface{} `json:"status" title:"状态"`
 	/*E(Input.status)*/

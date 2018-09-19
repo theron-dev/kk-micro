@@ -33,6 +33,9 @@ type /*B(Task)*/ StageCreateTask /*E(Task)*/ struct {
 	/*B(Input.endTime)*/
 	EndTime int64 `json:"endTime" title:"结束时间"`
 	/*E(Input.endTime)*/
+	/*B(Input.uid)*/
+	Uid int64 `json:"uid" title:"用户ID"`
+	/*E(Input.uid)*/
 	/*B(Input.title)*/
 	Title string `json:"title" title:"说明"`
 	/*E(Input.title)*/
