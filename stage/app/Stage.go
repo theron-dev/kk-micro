@@ -1,4 +1,4 @@
-package stage
+package app
 
 /*B(Import)*/
 import "github.com/hailongz/kk-lib/db"
@@ -20,9 +20,9 @@ type /*B(Object)*/ Stage /*E(Object)*/ struct {
 	/*B(Property.eid)*/
 	Eid int64 `json:"eid" title:"实体ID" index:"asc"`
 	/*E(Property.eid)*/
-	/*B(Property.uid)*/
-	Uid int64 `json:"uid" title:"用户ID" index:"asc"`
-	/*E(Property.uid)*/
+	/*B(Property.etype)*/
+	Etype int `json:"etype" title:"实体类型" index:"asc"`
+	/*E(Property.etype)*/
 	/*B(Property.status)*/
 	Status int `json:"status" title:"状态" index:"asc"`
 	/*E(Property.status)*/
@@ -32,6 +32,9 @@ type /*B(Object)*/ Stage /*E(Object)*/ struct {
 	/*B(Property.endTime)*/
 	EndTime int64 `json:"endTime" title:"结束时间" index:"asc"`
 	/*E(Property.endTime)*/
+	/*B(Property.uid)*/
+	Uid int64 `json:"uid" title:"用户ID" index:"asc"`
+	/*E(Property.uid)*/
 	/*B(Property.title)*/
 	Title string `json:"title" title:"说明" length:"255"`
 	/*E(Property.title)*/

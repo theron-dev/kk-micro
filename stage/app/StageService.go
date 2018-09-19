@@ -1,4 +1,4 @@
-package stage
+package app
 
 /*B(Import)*/
 import (
@@ -45,6 +45,8 @@ func (S *StageService) HandleStageGetTask(a micro.IApp, task *StageGetTask) erro
 		return err
 	}
 
+	prefix = Prefix(a, prefix, task.Etype, task.Eid)
+
 	var v = Stage{}
 	var scanner = db.NewScaner(&v)
 	var rs *sql.Rows = nil
@@ -87,6 +89,8 @@ func (S *StageService) HandleStageClearTask(a micro.IApp, task *StageClearTask) 
 		return err
 	}
 
+	prefix = Prefix(a, prefix, task.Etype, task.Eid)
+
 	var v = Stage{}
 
 	_, err = db.DeleteWithSQL(conn, &v, prefix, " WHERE eid=?", task.Eid)
@@ -113,6 +117,8 @@ func (S *StageService) HandleStageRemoveTask(a micro.IApp, task *StageRemoveTask
 	if err != nil {
 		return err
 	}
+
+	prefix = Prefix(a, prefix, task.Etype, task.Eid)
 
 	var v = Stage{}
 	var scanner = db.NewScaner(&v)
@@ -166,6 +172,8 @@ func (S *StageService) HandleStageSetTask(a micro.IApp, task *StageSetTask) erro
 		return err
 	}
 
+	prefix = Prefix(a, prefix, task.Etype, task.Eid)
+
 	var v = Stage{}
 	var scanner = db.NewScaner(&v)
 	var rs *sql.Rows = nil
@@ -187,11 +195,6 @@ func (S *StageService) HandleStageSetTask(a micro.IApp, task *StageSetTask) erro
 		}
 
 		keys := map[string]bool{}
-
-		if task.Eid != nil {
-			keys["eid"] = true
-			v.Eid = dynamic.IntValue(task.Eid, 0)
-		}
 
 		if task.EndTime != nil {
 			keys["endTime"] = true
@@ -268,10 +271,13 @@ func (S *StageService) HandleStageCreateTask(a micro.IApp, task *StageCreateTask
 		return err
 	}
 
+	prefix = Prefix(a, prefix, task.Etype, task.Eid)
+
 	var v = Stage{}
 
 	v.Title = task.Title
 	v.Eid = task.Eid
+	v.Etype = task.Etype
 	v.Uid = task.Uid
 	v.EndTime = task.EndTime
 	v.Status = task.Status
@@ -300,22 +306,21 @@ func (S *StageService) HandleStageQueryTask(a micro.IApp, task *StageQueryTask) 
 		return err
 	}
 
+	prefix = Prefix(a, prefix, task.Etype, task.Eid)
+
 	var v = Stage{}
 
 	sql := bytes.NewBuffer(nil)
 
 	args := []interface{}{}
 
-	sql.WriteString(" WHERE 1")
+	sql.WriteString(" WHERE etype=? AND eid=?")
+
+	args = append(args, task.Etype, task.Eid)
 
 	if task.Id != 0 {
 		sql.WriteString(" AND id=?")
 		args = append(args, task.Id)
-	}
-
-	if task.Eid != nil {
-		sql.WriteString(" AND eid=?")
-		args = append(args, task.Eid)
 	}
 
 	if task.Uid != nil {
@@ -426,6 +431,8 @@ func (S *StageService) HandleStageNearTask(a micro.IApp, task *StageNearTask) er
 		return err
 	}
 
+	prefix = Prefix(a, prefix, task.Etype, task.Eid)
+
 	var v = Stage{}
 	var scanner = db.NewScaner(&v)
 	var rs *sql.Rows = nil
@@ -434,9 +441,9 @@ func (S *StageService) HandleStageNearTask(a micro.IApp, task *StageNearTask) er
 
 	args := []interface{}{}
 
-	sql.WriteString(" WHERE eid=?")
+	sql.WriteString(" WHERE etype=? AND eid=?")
 
-	args = append(args, task.Eid)
+	args = append(args, task.Etype, task.Eid)
 
 	if task.Type != nil {
 		sql.WriteString(" AND type=?")

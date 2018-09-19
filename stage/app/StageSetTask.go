@@ -1,4 +1,4 @@
-package stage
+package app
 
 /*B(Import)*/
 /*E(Import)*/
@@ -21,12 +21,6 @@ type /*B(Task)*/ StageSetTask /*E(Task)*/ struct {
 	/*B(Input.options)*/
 	Options interface{} `json:"options" title:"其他数据"`
 	/*E(Input.options)*/
-	/*B(Input.eid)*/
-	Eid interface{} `json:"eid" title:"实体ID"`
-	/*E(Input.eid)*/
-	/*B(Input.uid)*/
-	Uid interface{} `json:"uid" title:"用户ID"`
-	/*E(Input.uid)*/
 	/*B(Input.status)*/
 	Status interface{} `json:"status" title:"状态"`
 	/*E(Input.status)*/
@@ -39,9 +33,18 @@ type /*B(Task)*/ StageSetTask /*E(Task)*/ struct {
 	/*B(Input.title)*/
 	Title string `json:"title" title:"说明"`
 	/*E(Input.title)*/
+	/*B(Input.uid)*/
+	Uid interface{} `json:"uid" title:"用户ID"`
+	/*E(Input.uid)*/
 	/*B(Input.id)*/
 	Id int64 `json:"id" title:"阶段ID"`
 	/*E(Input.id)*/
+	/*B(Input.eid)*/
+	Eid int64 `json:"eid" title:"实体ID"`
+	/*E(Input.eid)*/
+	/*B(Input.etype)*/
+	Etype int `json:"etype" title:"实体类型"`
+	/*E(Input.etype)*/
 
 	/*B(Task.Result)*/
 	Result StageSetTaskResult `json:"-"`

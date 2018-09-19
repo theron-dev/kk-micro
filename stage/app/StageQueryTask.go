@@ -1,4 +1,4 @@
-package stage
+package app
 
 /*B(Import)*/
 import "github.com/hailongz/kk-micro/micro"
@@ -28,18 +28,21 @@ type /*B(Task)*/ StageQueryTask /*E(Task)*/ struct {
 	/*B(Input.status)*/
 	Status string `json:"status" title:"状态 多个逗号分割"`
 	/*E(Input.status)*/
-	/*B(Input.uid)*/
-	Uid interface{} `json:"uid" title:"用户ID"`
-	/*E(Input.uid)*/
 	/*B(Input.type)*/
 	Type string `json:"type" title:"类型 多个逗号分割"`
 	/*E(Input.type)*/
-	/*B(Input.eid)*/
-	Eid interface{} `json:"eid" title:"实体ID"`
-	/*E(Input.eid)*/
+	/*B(Input.uid)*/
+	Uid interface{} `json:"uid" title:"用户ID"`
+	/*E(Input.uid)*/
 	/*B(Input.id)*/
 	Id int64 `json:"id" title:"阶段ID"`
 	/*E(Input.id)*/
+	/*B(Input.eid)*/
+	Eid int64 `json:"eid" title:"实体ID"`
+	/*E(Input.eid)*/
+	/*B(Input.etype)*/
+	Etype int `json:"etype" title:"实体类型"`
+	/*E(Input.etype)*/
 
 	/*B(Task.Result)*/
 	Result StageQueryTaskResult `json:"-"`

@@ -1,4 +1,4 @@
-package stage
+package app
 
 /*B(Import)*/
 /*E(Import)*/
@@ -21,15 +21,18 @@ type /*B(Task)*/ StageNearTask /*E(Task)*/ struct {
 	/*B(Input.status)*/
 	Status interface{} `json:"status" title:"状态"`
 	/*E(Input.status)*/
-	/*B(Input.uid)*/
-	Uid int64 `json:"uid" title:"用户ID"`
-	/*E(Input.uid)*/
 	/*B(Input.type)*/
 	Type interface{} `json:"type" title:"类型"`
 	/*E(Input.type)*/
+	/*B(Input.uid)*/
+	Uid interface{} `json:"uid" title:"用户ID"`
+	/*E(Input.uid)*/
 	/*B(Input.eid)*/
 	Eid int64 `json:"eid" title:"实体ID"`
 	/*E(Input.eid)*/
+	/*B(Input.etype)*/
+	Etype int `json:"etype" title:"实体类型"`
+	/*E(Input.etype)*/
 
 	/*B(Task.Result)*/
 	Result StageNearTaskResult `json:"-"`

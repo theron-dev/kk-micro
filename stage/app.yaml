@@ -10,6 +10,12 @@ services:
         title: 创建
         name: stage/create
         input:
+          - name: etype
+            type: int
+            title: 实体类型
+          - name: eid
+            type: long
+            title: 实体ID
           - name: title
             type: string
             title: 说明
@@ -25,9 +31,6 @@ services:
           - name: status
             type: int
             title: 状态
-          - name: eid
-            type: long
-            title: 实体ID
           - name: options
             type: object
             title: 其他数据
@@ -40,6 +43,12 @@ services:
         title: 修改
         name: stage/set
         input:
+          - name: etype
+            type: int
+            title: 实体类型
+          - name: eid
+            type: long
+            title: 实体ID
           - name: id
             type: long
             title: 阶段ID
@@ -58,9 +67,6 @@ services:
           - name: status
             type: object
             title: 状态
-          - name: eid
-            type: object
-            title: 实体ID
           - name: options
             type: object
             title: 其他数据
@@ -73,6 +79,12 @@ services:
         title: 删除
         name: stage/remove
         input:
+          - name: etype
+            type: int
+            title: 实体类型
+          - name: eid
+            type: long
+            title: 实体ID
           - name: id
             type: long
             title: 阶段ID
@@ -85,6 +97,9 @@ services:
         title: 清理
         name: stage/clear
         input:
+          - name: etype
+            type: int
+            title: 实体类型
           - name: eid
             type: long
             title: 实体ID
@@ -92,6 +107,12 @@ services:
         title: 获取
         name: stage/get
         input:
+          - name: etype
+            type: int
+            title: 实体类型
+          - name: eid
+            type: long
+            title: 实体ID
           - name: id
             type: long
             title: 阶段ID
@@ -104,6 +125,9 @@ services:
         title: 接近
         name: stage/near
         input:
+          - name: etype
+            type: int
+            title: 实体类型
           - name: eid
             type: long
             title: 实体ID
@@ -126,15 +150,18 @@ services:
         name: stage/query
         type: query
         input:
+          - name: etype
+            type: int
+            title: 实体类型
+          - name: eid
+            type: long
+            title: 实体ID
           - name: id
             type: long
             title: 阶段ID
           - name: uid
             type: login
             title: 用户ID
-          - name: eid
-            type: long
-            title: 实体ID
           - name: type
             type: string
             title: 类型 多个逗号分割
@@ -175,6 +202,10 @@ objects:
       - name: status
         type: int
         title: 状态
+        index: asc
+      - name: etype
+        type: int
+        title: 实体类型
         index: asc
       - name: eid
         type: long
