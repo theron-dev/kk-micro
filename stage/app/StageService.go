@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"database/sql"
 	"fmt"
-	"log"
 	"strings"
 	"time"
 
@@ -88,8 +87,6 @@ func (S *StageService) HandleStageBatchSetTask(a micro.IApp, task *StageBatchSet
 	if err != nil {
 		return err
 	}
-
-	log.Println(task.Items)
 
 	err = db.Transaction(conn, func(conn db.Database) error {
 
