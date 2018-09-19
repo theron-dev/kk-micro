@@ -1,6 +1,5 @@
 package app
 
-/*B(Import)*/
 import (
 	"bytes"
 	"database/sql"
@@ -12,6 +11,8 @@ import (
 	"github.com/hailongz/kk-lib/dynamic"
 	"github.com/hailongz/kk-micro/micro"
 )
+
+/*B(Import)*/
 
 /*E(Import)*/
 
@@ -29,6 +30,182 @@ func (S *StageService) GetTitle() string {
 /*E(Title)*/
 
 /*B(Handle)*/ /*E(Handle)*/
+/*B(Handle.StageBatchSet)*/
+/*批量设置*/
+func (S *StageService) HandleStageBatchSetTask(a micro.IApp, task *StageBatchSetTask) error {
+	/*E(Handle.StageBatchSet)*/
+	//TODO
+
+	conn, prefix, err := micro.DBOpen(a, "db")
+
+	if err != nil {
+		return err
+	}
+
+	prefix = Prefix(a, prefix, task.Etype, task.Eid)
+
+	v := Stage{}
+
+	rm := []Stage{}
+
+	types := map[int]Stage{}
+
+	vs := []Stage{}
+
+	err = func() error {
+
+		rs, err := db.Query(conn, &v, prefix, " WHERE etype=? AND eid=? ORDER BY endTime ASC,id ASC", task.Etype, task.Eid)
+
+		if err != nil {
+			return err
+		}
+
+		defer rs.Close()
+
+		scaner := db.NewScaner(&v)
+
+		for rs.Next() {
+
+			err = scaner.Scan(rs)
+
+			if err != nil {
+				return err
+			}
+
+			_, ok := types[v.Type]
+
+			if ok {
+				rm = append(rm, v)
+			} else {
+				types[v.Type] = v
+			}
+		}
+
+		return nil
+	}()
+
+	if err != nil {
+		return err
+	}
+
+	err = db.Transaction(conn, func(conn db.Database) error {
+
+		if task.Items != nil {
+
+			for _, item := range task.Items {
+				v, ok := types[item.Type]
+				if ok {
+					v.EndTime = item.EndTime
+					v.Title = item.Title
+					_, err := db.UpdateWithKeys(conn, &v, prefix, map[string]bool{"endTime": true, "title": true})
+					if err != nil {
+						return err
+					}
+					delete(types, item.Type)
+				} else {
+					v.Etype = task.Etype
+					v.Eid = task.Eid
+					v.Uid = task.Uid
+					v.Title = item.Title
+					v.Type = item.Type
+					v.EndTime = item.EndTime
+					v.Ctime = time.Now().Unix()
+					_, err := db.Insert(conn, &v, prefix)
+					if err != nil {
+						return err
+					}
+				}
+				vs = append(vs, v)
+			}
+		}
+
+		for _, v := range rm {
+			_, err := db.Delete(conn, &v, prefix)
+			if err != nil {
+				return err
+			}
+		}
+
+		for _, v := range types {
+			_, err := db.Delete(conn, &v, prefix)
+			if err != nil {
+				return err
+			}
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return err
+	}
+
+	task.Result.Stages = vs
+
+	return nil
+}
+
+/*B(Handle.StageBatchCopy)*/
+/*批量复制*/
+func (S *StageService) HandleStageBatchCopyTask(a micro.IApp, task *StageBatchCopyTask) error {
+	/*E(Handle.StageBatchCopy)*/
+	//TODO
+
+	conn, prefix, err := micro.DBOpen(a, "dbr")
+
+	if err != nil {
+		return err
+	}
+
+	prefix = Prefix(a, prefix, task.Fetype, task.Feid)
+
+	v := Stage{}
+
+	items := []Item{}
+
+	err = func() error {
+
+		rs, err := db.Query(conn, &v, prefix, " WHERE etype=? AND eid=? ORDER BY endTime ASC,id ASC", task.Fetype, task.Feid)
+
+		if err != nil {
+			return err
+		}
+
+		defer rs.Close()
+
+		scaner := db.NewScaner(&v)
+
+		for rs.Next() {
+
+			err = scaner.Scan(rs)
+
+			if err != nil {
+				return err
+			}
+
+			items = append(items, Item{
+				EndTime: v.EndTime,
+				Type:    v.Type,
+				Title:   v.Title,
+			})
+		}
+
+		return nil
+	}()
+
+	if err != nil {
+		return err
+	}
+
+	t := StageBatchSetTask{}
+	t.Etype = task.Etype
+	t.Eid = task.Eid
+	t.Uid = task.Uid
+	t.Items = items
+
+	return S.HandleStageBatchSetTask(a, &t)
+}
+
 /*B(Handle.StageGet)*/
 /*获取*/
 func (S *StageService) HandleStageGetTask(a micro.IApp, task *StageGetTask) error {

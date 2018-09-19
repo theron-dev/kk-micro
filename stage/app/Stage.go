@@ -1,9 +1,8 @@
 package app
 
 /*B(Import)*/
-import "github.com/hailongz/kk-lib/db"
-
-/*E(Import)*/
+	import "github.com/hailongz/kk-lib/db"
+	/*E(Import)*/
 
 type /*B(Object)*/ Stage /*E(Object)*/ struct {
 	/*B(Object.Base)*/

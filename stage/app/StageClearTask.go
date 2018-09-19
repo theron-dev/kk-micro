@@ -1,7 +1,7 @@
 package app
 
 /*B(Import)*/
-/*E(Import)*/
+	/*E(Import)*/
 
 type /*B(Result)*/ StageClearTaskResult /*E(Result)*/ struct {
 	/*B(Result.Base)*/

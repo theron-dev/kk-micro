@@ -75,6 +75,51 @@ services:
             type: Stage
             omitempty: true
             title: 阶段
+      StageBatchSet:
+        title: 批量设置
+        name: stage/batch/set
+        input:
+          - name: etype
+            type: int
+            title: 实体类型
+          - name: eid
+            type: long
+            title: 实体ID
+          - name: uid
+            type: long
+            title: 用户ID
+          - name: items
+            type: Item[]
+            title: 批量设置项
+        output:
+          - name: stages
+            type: Stage[]
+            omitempty: true
+            title: 阶段
+      StageBatchCopy:
+        title: 批量复制
+        name: stage/batch/copy
+        input:
+          - name: etype
+            type: int
+            title: 实体类型
+          - name: eid
+            type: long
+            title: 实体ID
+          - name: fetype
+            type: int
+            title: 来源实体类型
+          - name: feid
+            type: long
+            title: 来源实体ID
+          - name: uid
+            type: long
+            title: 用户ID
+        output:
+          - name: stages
+            type: Stage[]
+            omitempty: true
+            title: 阶段
       StageRemove:
         title: 删除
         name: stage/remove
@@ -178,6 +223,18 @@ services:
             title: 阶段
         
 objects:
+  Item:
+    title: 批量设置项
+    fields:
+      - name: title
+        type: string
+        title: 说明
+      - name: endTime
+        type: long
+        title: 结束时间
+      - name: type
+        type: int
+        title: 类型
   Stage:
     title: 阶段
     name: stage

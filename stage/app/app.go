@@ -13,15 +13,19 @@ func Open(app micro.IApp) micro.IApp {
 	/*B(App.Service.Stage)*/
 	{
 		s := StageService{}
+		app.Use(&StageSetTask{}, &s)
+		app.Use(&StageBatchCopyTask{}, &s)
+		app.Use(&StageRemoveTask{}, &s)
 		app.Use(&StageClearTask{}, &s)
-		app.Use(&StageGetTask{}, &s)
 		app.Use(&StageNearTask{}, &s)
 		app.Use(&StageQueryTask{}, &s)
 		app.Use(&StageCreateTask{}, &s)
-		app.Use(&StageSetTask{}, &s)
-		app.Use(&StageRemoveTask{}, &s)
+		app.Use(&StageGetTask{}, &s)
+		app.Use(&StageBatchSetTask{}, &s)
 	}
 	/*E(App.Service.Stage)*/
+
+	app.AddDefaultService(&micro.DBService{})
 
 	return app
 }
