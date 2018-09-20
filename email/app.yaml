@@ -1,0 +1,28 @@
+
+title: 发送邮件
+type: kk/micro
+       
+services:
+  Mail:
+    title: 邮件服务
+    tasks:
+      Send:
+        title: 发邮件
+        name: send
+        input:
+          - name: config
+            type: string
+            title: 配置名
+          - name: title
+            type: string
+            title: 标题
+          - name: contentType
+            type: string
+            title: 内容类型
+          - name: content
+            type: string
+            title: 内容
+          - name: to
+            type: string
+            title: 发送目标
+      
