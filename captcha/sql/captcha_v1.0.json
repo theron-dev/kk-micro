@@ -1,0 +1,33 @@
+{
+	"captcha": {
+		"code": {
+			"name": "code",
+			"type": "string",
+			"length": 32,
+			"index": "asc",
+			"title": "唯一代码"
+		},
+		"digits": {
+			"type": "string",
+			"length": 32,
+			"title": "校验码[0-9]",
+			"name": "digits"
+		},
+		"md5": {
+			"length": 32,
+			"title": "MD5校验码",
+			"name": "md5",
+			"type": "string"
+		},
+		"etime": {
+			"name": "etime",
+			"type": "long",
+			"title": "过期时间"
+		},
+		"ctime": {
+			"name": "ctime",
+			"type": "long",
+			"title": "创建时间"
+		}
+	}
+}
