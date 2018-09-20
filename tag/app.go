@@ -143,8 +143,10 @@ func Set(conn db.Database, prefix string, eid int64, tags []string) error {
 			if err != nil {
 				return err
 			}
+		} else {
 			delete(vs, tag)
 		}
+
 	}
 
 	counter := Counter{}
