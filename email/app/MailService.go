@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/hailongz/kk-lib/dynamic"
+	"github.com/hailongz/kk-lib/http"
 	"github.com/hailongz/kk-micro/micro"
 )
 
@@ -32,7 +33,7 @@ func (S *MailService) GetTitle() string {
 
 func Dial(addr string) (*smtp.Client, error) {
 	conn, err := tls.Dial("tcp", addr, &tls.Config{
-		InsecureSkipVerify: true,
+		RootCAs: http.CA(),
 	})
 	if err != nil {
 		return nil, err
