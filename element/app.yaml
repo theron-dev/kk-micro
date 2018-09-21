@@ -35,7 +35,7 @@ services:
             title: 最大用户限制 0 为不限制
             type: long
         output:
-          - name: elemnet
+          - name: element
             title: Element
             omitempty: true
             type: Element
@@ -74,7 +74,7 @@ services:
             title: 最大用户限制 0 为不限制
             type: object
         output:
-          - name: elemnet
+          - name: element
             title: Element
             omitempty: true
             type: Element
@@ -89,7 +89,7 @@ services:
             title: ID
             type: long
         output:
-          - name: elemnet
+          - name: element
             title: Element
             omitempty: true
             type: Element
@@ -104,7 +104,7 @@ services:
             title: ID
             type: long
         output:
-          - name: elemnet
+          - name: element
             title: Element
             omitempty: true
             type: Element
@@ -144,7 +144,7 @@ services:
             type: string
             title: rank 排行升序 desc 降序 asc 升序 status 状态升序
         output:
-          - name: elemnet
+          - name: element
             title: Element
             omitempty: true
             type: Element[]        
@@ -267,8 +267,6 @@ services:
             type: long
 
 
-            
-            
 objects:
   Element:
     title: Element

@@ -1,8 +1,9 @@
 package app
 
 /*B(Import)*/
-	import "github.com/hailongz/kk-micro/micro"
-	/*E(Import)*/
+import "github.com/hailongz/kk-micro/micro"
+
+/*E(Import)*/
 
 type /*B(Result)*/ ElementQueryTaskResult /*E(Result)*/ struct {
 	/*B(Result.Base)*/
@@ -10,9 +11,9 @@ type /*B(Result)*/ ElementQueryTaskResult /*E(Result)*/ struct {
 	/*E(Result.Base)*/
 
 	/*B(Output)*/ /*E(Output)*/
-	/*B(Output.elemnet)*/
-	Elemnet []Element `json:"elemnet,omitempty" title:"Element"`
-	/*E(Output.elemnet)*/
+	/*B(Output.element)*/
+	Element []Element `json:"element,omitempty" title:"Element"`
+	/*E(Output.element)*/
 }
 
 type /*B(Task)*/ ElementQueryTask /*E(Task)*/ struct {

@@ -54,7 +54,7 @@ func (S *ElementService) HandleElementGetTask(a micro.IApp, task *ElementGetTask
 		return micro.NewError(ERROR_NOT_FOUND, fmt.Sprintf("未找到节点 [%d]", task.Id))
 	}
 
-	task.Result.Elemnet = v
+	task.Result.Element = v
 
 	return nil
 }
@@ -105,7 +105,7 @@ func (S *ElementService) HandleElementSetTask(a micro.IApp, task *ElementSetTask
 				return micro.NewError(ERROR_NOT_FOUND, "未找到下级兄弟节点")
 			}
 
-			_, err = conn.Exec(fmt.Sprintf("UPDATE `%s%s` SET rank=rank+1 WHERE pid=? AND rank>=?", prefix, p.GetName()), p.Pid, p.Rank)
+			_, err = conn.Exec(fmt.Sprintf("UPDATE `%s%s` SET `rank`=`rank`+1 WHERE pid=? AND `rank`>=?", prefix, p.GetName()), p.Pid, p.Rank)
 
 			if err != nil {
 				return err
@@ -131,7 +131,7 @@ func (S *ElementService) HandleElementSetTask(a micro.IApp, task *ElementSetTask
 				return micro.NewError(ERROR_NOT_FOUND, "未找到上级兄弟节点")
 			}
 
-			_, err = conn.Exec(fmt.Sprintf("UPDATE `%s%s` SET rank=rank+1 WHERE pid=? AND rank>?", prefix, p.GetName()), p.Pid, p.Rank)
+			_, err = conn.Exec(fmt.Sprintf("UPDATE `%s%s` SET `rank`=`rank`+1 WHERE pid=? AND `rank`>?", prefix, p.GetName()), p.Pid, p.Rank)
 
 			if err != nil {
 				return err
@@ -261,7 +261,7 @@ func (S *ElementService) HandleElementSetTask(a micro.IApp, task *ElementSetTask
 		return err
 	}
 
-	task.Result.Elemnet = v
+	task.Result.Element = v
 
 	return nil
 }
@@ -298,7 +298,7 @@ func GetLastChildElement(conn db.Database, prefix string, pid int64) (*Element, 
 
 	v := Element{}
 
-	rs, err := db.Query(conn, &v, prefix, " WHERE pid=? ORDER BY rank DESC LIMIT 1", pid)
+	rs, err := db.Query(conn, &v, prefix, " WHERE pid=? ORDER BY `rank` DESC LIMIT 1", pid)
 
 	if err != nil {
 		return nil, err
@@ -357,7 +357,7 @@ func (S *ElementService) HandleElementAddTask(a micro.IApp, task *ElementAddTask
 				return micro.NewError(ERROR_NOT_FOUND, "未找到下级兄弟节点")
 			}
 
-			_, err = conn.Exec(fmt.Sprintf("UPDATE `%s%s` SET rank=rank+1 WHERE pid=? AND rank>=?", prefix, p.GetName()), p.Pid, p.Rank)
+			_, err = conn.Exec(fmt.Sprintf("UPDATE `%s%s` SET `rank`=`rank`+1 WHERE pid=? AND `rank`>=?", prefix, p.GetName()), p.Pid, p.Rank)
 
 			if err != nil {
 				return err
@@ -385,7 +385,7 @@ func (S *ElementService) HandleElementAddTask(a micro.IApp, task *ElementAddTask
 				return micro.NewError(ERROR_NOT_FOUND, "未找到上级兄弟节点")
 			}
 
-			_, err = conn.Exec(fmt.Sprintf("UPDATE `%s%s` SET rank=rank+1 WHERE pid=? AND rank>?", prefix, p.GetName()), p.Pid, p.Rank)
+			_, err = conn.Exec(fmt.Sprintf("UPDATE `%s%s` SET `rank`=`rank`+1 WHERE pid=? AND `rank`>?", prefix, p.GetName()), p.Pid, p.Rank)
 
 			if err != nil {
 				return err
@@ -439,6 +439,37 @@ func (S *ElementService) HandleElementAddTask(a micro.IApp, task *ElementAddTask
 				}
 			}
 
+		} else {
+
+			p, err := GetLastChildElement(conn, prefix, 0)
+
+			if err != nil {
+				return err
+			}
+
+			if p != nil {
+
+				v.Pid = p.Pid
+				v.Depth = p.Depth
+				v.Rank = p.Rank + 1
+
+				_, err = db.Insert(conn, &v, prefix)
+
+				if err != nil {
+					return err
+				}
+			} else {
+
+				v.Pid = 0
+				v.Depth = 0
+				v.Rank = 0
+
+				_, err = db.Insert(conn, &v, prefix)
+
+				if err != nil {
+					return err
+				}
+			}
 		}
 
 		if task.Tags != "" {
@@ -455,7 +486,7 @@ func (S *ElementService) HandleElementAddTask(a micro.IApp, task *ElementAddTask
 		return err
 	}
 
-	task.Result.Elemnet = &v
+	task.Result.Element = &v
 
 	return nil
 }
@@ -532,13 +563,13 @@ func (S *ElementService) HandleElementQueryTask(a micro.IApp, task *ElementQuery
 	}
 
 	if task.OrderBy == "asc" {
-		sql.WriteString(" ORDER BY rank ASC,id ASC")
+		sql.WriteString(" ORDER BY `rank` ASC,id ASC")
 	} else if task.OrderBy == "desc" {
-		sql.WriteString(" ORDER BY rank DESC,id DESC")
+		sql.WriteString(" ORDER BY `rank` DESC,id DESC")
 	} else if task.OrderBy == "status" {
-		sql.WriteString(" ORDER BY status ASC,rank ASC,id ASC")
+		sql.WriteString(" ORDER BY status ASC,`rank` ASC,id ASC")
 	} else {
-		sql.WriteString(" ORDER BY rank ASC, id ASC")
+		sql.WriteString(" ORDER BY `rank` ASC, id ASC")
 	}
 
 	var pageIndex = task.PageIndex
@@ -593,7 +624,7 @@ func (S *ElementService) HandleElementQueryTask(a micro.IApp, task *ElementQuery
 		vs = append(vs, v)
 	}
 
-	task.Result.Elemnet = vs
+	task.Result.Element = vs
 
 	return nil
 }
@@ -665,7 +696,7 @@ func (S *ElementService) HandleElementRemoveTask(a micro.IApp, task *ElementRemo
 		return RemoveElement(conn, prefix, v.Id)
 	})
 
-	task.Result.Elemnet = v
+	task.Result.Element = v
 
 	return nil
 }

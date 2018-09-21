@@ -1,16 +1,16 @@
 package app
 
 /*B(Import)*/
-	/*E(Import)*/
+/*E(Import)*/
 
 type /*B(Result)*/ ElementSetTaskResult /*E(Result)*/ struct {
 	/*B(Result.Base)*/
 	/*E(Result.Base)*/
 
 	/*B(Output)*/ /*E(Output)*/
-	/*B(Output.elemnet)*/
-	Elemnet *Element `json:"elemnet,omitempty" title:"Element"`
-	/*E(Output.elemnet)*/
+	/*B(Output.element)*/
+	Element *Element `json:"element,omitempty" title:"Element"`
+	/*E(Output.element)*/
 }
 
 type /*B(Task)*/ ElementSetTask /*E(Task)*/ struct {

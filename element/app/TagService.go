@@ -5,9 +5,8 @@ import (
 )
 
 /*B(Import)*/
-import "github.com/hailongz/kk-micro/micro"
-
-/*E(Import)*/
+	import "github.com/hailongz/kk-micro/micro"
+	/*E(Import)*/
 
 type /*B(Service)*/ TagService /*E(Service)*/ struct {
 
@@ -26,7 +25,7 @@ func (S *TagService) GetTitle() string {
 /*B(Handle.TagCounterQuery)*/
 /*查询标签计数*/
 func (S *TagService) HandleTagCounterQueryTask(a micro.IApp, task *TagCounterQueryTask) error {
-	/*E(Handle.TagCounterQuery)*/
+/*E(Handle.TagCounterQuery)*/
 	//TODO
 
 	conn, prefix, err := micro.DBOpen(a, "db")
@@ -43,7 +42,7 @@ func (S *TagService) HandleTagCounterQueryTask(a micro.IApp, task *TagCounterQue
 /*B(Handle.TagCounterGet)*/
 /*获取标签计数*/
 func (S *TagService) HandleTagCounterGetTask(a micro.IApp, task *TagCounterGetTask) error {
-	/*E(Handle.TagCounterGet)*/
+/*E(Handle.TagCounterGet)*/
 	//TODO
 
 	conn, prefix, err := micro.DBOpen(a, "db")
@@ -60,7 +59,7 @@ func (S *TagService) HandleTagCounterGetTask(a micro.IApp, task *TagCounterGetTa
 /*B(Handle.TagQuery)*/
 /*查询标签*/
 func (S *TagService) HandleTagQueryTask(a micro.IApp, task *TagQueryTask) error {
-	/*E(Handle.TagQuery)*/
+/*E(Handle.TagQuery)*/
 	//TODO
 
 	conn, prefix, err := micro.DBOpen(a, "db")
