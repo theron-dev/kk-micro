@@ -1,0 +1,7 @@
+package app
+
+const (
+	ERROR_NOT_FOUND    = 5001
+	ERROR_NOT_FOUND_ID = 5002
+	ERROR_MAX_COUNT    = 5003
+)

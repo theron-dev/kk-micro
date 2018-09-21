@@ -1,0 +1,105 @@
+{
+	"user": {
+		"uid": {
+			"name": "uid",
+			"type": "long",
+			"title": "用户ID",
+			"index": "asc"
+		},
+		"elementId": {
+			"name": "elementId",
+			"type": "long",
+			"title": "节点ID",
+			"index": "asc"
+		},
+		"title": {
+			"name": "title",
+			"type": "string",
+			"length": 255,
+			"title": "说明"
+		},
+		"status": {
+			"name": "status",
+			"type": "int",
+			"title": "状态",
+			"index": "asc"
+		},
+		"options": {
+			"name": "options",
+			"type": "object",
+			"title": "其他数据"
+		},
+		"ctime": {
+			"name": "ctime",
+			"type": "long",
+			"title": "创建时间"
+		},
+		"mtime": {
+			"name": "mtime",
+			"type": "long",
+			"title": "修改时间"
+		}
+	},
+	"element": {
+		"rank": {
+			"type": "int",
+			"title": "排行",
+			"index": "asc",
+			"name": "rank"
+		},
+		"ctime": {
+			"title": "创建时间",
+			"name": "ctime",
+			"type": "long"
+		},
+		"status": {
+			"index": "asc",
+			"name": "status",
+			"type": "int",
+			"title": "状态"
+		},
+		"userCount": {
+			"type": "long",
+			"title": "用户数量",
+			"name": "userCount"
+		},
+		"options": {
+			"title": "其他数据",
+			"name": "options",
+			"type": "object"
+		},
+		"maxUserCount": {
+			"name": "maxUserCount",
+			"type": "long",
+			"title": "最大用户数 0为不限制"
+		},
+		"depth": {
+			"type": "int",
+			"title": "深度",
+			"name": "depth"
+		},
+		"mtime": {
+			"title": "修改时间",
+			"name": "mtime",
+			"type": "long"
+		},
+		"documentId": {
+			"index": "asc",
+			"name": "documentId",
+			"title": "文档ID 用于数据分区",
+			"type": "long"
+		},
+		"pid": {
+			"title": "父级ID",
+			"type": "long",
+			"index": "asc",
+			"name": "pid"
+		},
+		"uid": {
+			"name": "uid",
+			"type": "long",
+			"title": "用户ID",
+			"index": "asc"
+		}
+	}
+}

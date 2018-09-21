@@ -1,0 +1,346 @@
+
+title: kk-element
+type: kk/micro
+
+services:
+  Element:
+    title: 节点服务
+    tasks:
+      ElementAdd:
+        title: 添加
+        name: element/add
+        input:
+          - name: documentId
+            title: 文档ID 用于数据分区
+            type: long
+          - name: pid
+            title: 父级ID
+            type: long
+          - name: beforeId
+            title: 上级兄弟ID
+            type: long
+          - name: afterId
+            title: 下级兄弟ID
+            type: long
+          - name: uid
+            title: 用户ID
+            type: long
+          - name: tags
+            title: 标签 逗号分割
+            type: string
+          - name: options
+            title: 其他数据
+            type: object
+          - name: maxUserCount
+            title: 最大用户限制 0 为不限制
+            type: long
+        output:
+          - name: elemnet
+            title: Element
+            omitempty: true
+            type: Element
+      ElementSet:
+        title: 修改
+        name: element/set
+        input:
+          - name: documentId
+            title: 文档ID 用于数据分区
+            type: long
+          - name: id
+            title: ID
+            type: long
+          - name: pid
+            title: 父级ID
+            type: object
+          - name: beforeId
+            title: 上级兄弟ID
+            type: long
+          - name: afterId
+            title: 下级兄弟ID
+            type: long
+          - name: uid
+            title: 用户ID
+            type: object
+          - name: status
+            title: 状态
+            type: object
+          - name: tags
+            title: 标签 逗号分割
+            type: object
+          - name: options
+            title: 其他数据
+            type: object
+          - name: maxUserCount
+            title: 最大用户限制 0 为不限制
+            type: object
+        output:
+          - name: elemnet
+            title: Element
+            omitempty: true
+            type: Element
+      ElementGet:
+        title: 获取
+        name: element/get
+        input:
+          - name: documentId
+            title: 文档ID 用于数据分区
+            type: long
+          - name: id
+            title: ID
+            type: long
+        output:
+          - name: elemnet
+            title: Element
+            omitempty: true
+            type: Element
+      ElementRemove:
+        title: 删除
+        name: element/remove
+        input:
+          - name: documentId
+            title: 文档ID 用于数据分区
+            type: long
+          - name: id
+            title: ID
+            type: long
+        output:
+          - name: elemnet
+            title: Element
+            omitempty: true
+            type: Element
+      ElementQuery:
+        title: 查询
+        name: element/query
+        type: query
+        input:
+          - name: documentId
+            title: 文档ID 用于数据分区
+            type: long
+          - name: pid
+            title: 父级ID
+            type: object
+          - name: id
+            title: 任务ID
+            type: long
+          - name: uid
+            title: 创建者ID
+            type: object
+          - name: fuid
+            title: 创建者ID/加入用户ID
+            type: object
+          - name: q
+            type: string
+            title: 关键字
+          - name: tags
+            title: 标签
+            type: string
+          - name: status
+            title: 状态 多个逗号分割
+            type: string
+          - name: minUserCount
+            title: 最小剩余用户数
+            type: long
+          - name: orderBy
+            type: string
+            title: rank 排行升序 desc 降序 asc 升序 status 状态升序
+        output:
+          - name: elemnet
+            title: Element
+            omitempty: true
+            type: Element[]        
+
+  User:
+    title: 用户服务
+    tasks:
+      UserJoin:
+        title: 加入
+        name: user/join
+        input:
+          - name: documentId
+            title: 文档ID 用于数据分区
+            type: long
+          - name: id
+            title: 节点ID
+            type: long
+          - name: uid
+            title: 用户ID
+            type: long
+          - name: title
+            title: 说明
+            type: string
+          - name: status
+            title: 状态
+            type: int
+          - name: options
+            title: 其他数据
+            type: object
+        output:
+          - name: user
+            title: 用户
+            omitempty: true
+            type: User
+      UserRemove:
+        title: 删除
+        name: user/remove
+        input:
+          - name: documentId
+            title: 文档ID 用于数据分区
+            type: long
+          - name: id
+            title: 节点ID
+            type: long
+          - name: uid
+            title: 用户ID
+            type: long
+        output:
+          - name: user
+            title: 用户
+            omitempty: true
+            type: User
+      UserGet:
+        title: 获取
+        name: user/get
+        input:
+          - name: documentId
+            title: 文档ID 用于数据分区
+            type: long
+          - name: id
+            title: 节点ID
+            type: long
+          - name: uid
+            title: 用户ID
+            type: long
+        output:
+          - name: user
+            title: 用户
+            omitempty: true
+            type: User
+      UserQuery:
+        title: 查询
+        name: user/query
+        type: query
+        input:
+          - name: documentId
+            title: 文档ID 用于数据分区
+            type: long
+          - name: id
+            title: 节点ID
+            type: long
+          - name: uid
+            title: 用户ID
+            type: object
+          - name: status
+            title: 状态多个逗号分割
+            type: string
+          - name: orderBy
+            type: string
+            title: desc 降序默认 asc 升序
+        output:
+          - name: users
+            title: 用户
+            omitempty: true
+            type: User[]
+
+  Tag:
+    title: 任务标签
+    tasks:
+      TagQuery:
+        title: 查询标签
+        name: tag/query
+        input:
+          - name: documentId
+            title: 文档ID 用于数据分区
+            type: long
+      TagCounterQuery:
+        title: 查询标签计数
+        name: tag/counter/query
+        input:
+          - name: documentId
+            title: 文档ID 用于数据分区
+            type: long
+      TagCounterGet:
+        title: 获取标签计数
+        name: tag/counter/get
+        input:
+          - name: documentId
+            title: 文档ID 用于数据分区
+            type: long
+
+
+            
+            
+objects:
+  Element:
+    title: Element
+    name: element
+    type: db
+    fields:
+      - name: documentId
+        title: 文档ID 用于数据分区
+        type: long
+        index: asc
+      - name: pid
+        title: 父级ID
+        type: long
+        index: asc
+      - name: uid
+        type: long
+        title: 用户ID
+        index: asc
+      - name: status
+        type: int
+        title: 状态
+        index: asc
+      - name: userCount
+        type: long
+        title: 用户数量
+      - name: maxUserCount
+        type: long
+        title: 最大用户数 0为不限制
+      - name: options
+        type: object
+        title: 其他数据
+      - name: depth
+        type: int
+        title: 深度
+      - name: rank
+        type: int
+        title: 排行
+        index: asc
+      - name: ctime
+        type: long
+        title: 创建时间
+      - name: mtime
+        type: long
+        title: 修改时间
+  User:
+    title: 用户
+    name: user
+    type: db
+    fields:
+      - name: uid
+        type: long
+        title: 用户ID
+        index: asc
+      - name: elementId
+        type: long
+        title: 节点ID
+        index: asc
+      - name: title
+        type: string
+        length: 255
+        title: 说明
+      - name: status
+        type: int
+        title: 状态
+        index: asc
+      - name: options
+        type: object
+        title: 其他数据
+      - name: ctime
+        type: long
+        title: 创建时间
+      - name: mtime
+        type: long
+        title: 修改时间
+        
