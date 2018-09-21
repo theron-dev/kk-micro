@@ -13,30 +13,32 @@ func Open(app micro.IApp) micro.IApp {
 	/*B(App.Service.Element)*/
 	{
 		s := ElementService{}
-		app.Use(&ElementAddTask{},&s)
-		app.Use(&ElementSetTask{},&s)
-		app.Use(&ElementGetTask{},&s)
-		app.Use(&ElementRemoveTask{},&s)
-		app.Use(&ElementQueryTask{},&s)
+		app.Use(&ElementAddTask{}, &s)
+		app.Use(&ElementSetTask{}, &s)
+		app.Use(&ElementGetTask{}, &s)
+		app.Use(&ElementRemoveTask{}, &s)
+		app.Use(&ElementQueryTask{}, &s)
 	}
 	/*E(App.Service.Element)*/
 	/*B(App.Service.Tag)*/
 	{
 		s := TagService{}
-		app.Use(&TagCounterGetTask{},&s)
-		app.Use(&TagQueryTask{},&s)
-		app.Use(&TagCounterQueryTask{},&s)
+		app.Use(&TagCounterGetTask{}, &s)
+		app.Use(&TagQueryTask{}, &s)
+		app.Use(&TagCounterQueryTask{}, &s)
 	}
 	/*E(App.Service.Tag)*/
 	/*B(App.Service.User)*/
 	{
 		s := UserService{}
-		app.Use(&UserRemoveTask{},&s)
-		app.Use(&UserGetTask{},&s)
-		app.Use(&UserQueryTask{},&s)
-		app.Use(&UserJoinTask{},&s)
+		app.Use(&UserRemoveTask{}, &s)
+		app.Use(&UserGetTask{}, &s)
+		app.Use(&UserQueryTask{}, &s)
+		app.Use(&UserJoinTask{}, &s)
 	}
 	/*E(App.Service.User)*/
+
+	app.AddDefaultService(&micro.DBService{})
 
 	return app
 }
