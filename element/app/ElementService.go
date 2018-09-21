@@ -624,7 +624,7 @@ func (S *ElementService) HandleElementQueryTask(a micro.IApp, task *ElementQuery
 		vs = append(vs, v)
 	}
 
-	task.Result.Element = vs
+	task.Result.Elements = vs
 
 	return nil
 }

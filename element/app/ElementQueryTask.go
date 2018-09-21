@@ -11,9 +11,9 @@ type /*B(Result)*/ ElementQueryTaskResult /*E(Result)*/ struct {
 	/*E(Result.Base)*/
 
 	/*B(Output)*/ /*E(Output)*/
-	/*B(Output.element)*/
-	Element []Element `json:"element,omitempty" title:"Element"`
-	/*E(Output.element)*/
+	/*B(Output.elements)*/
+	Elements []Element `json:"elements,omitempty" title:"Element"`
+	/*E(Output.elements)*/
 }
 
 type /*B(Task)*/ ElementQueryTask /*E(Task)*/ struct {

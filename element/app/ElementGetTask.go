@@ -1,7 +1,7 @@
 package app
 
 /*B(Import)*/
-/*E(Import)*/
+	/*E(Import)*/
 
 type /*B(Result)*/ ElementGetTaskResult /*E(Result)*/ struct {
 	/*B(Result.Base)*/

@@ -23,9 +23,9 @@ func Open(app micro.IApp) micro.IApp {
 	/*B(App.Service.Tag)*/
 	{
 		s := TagService{}
-		app.Use(&TagQueryTask{},&s)
 		app.Use(&TagCounterQueryTask{},&s)
 		app.Use(&TagCounterGetTask{},&s)
+		app.Use(&TagQueryTask{},&s)
 	}
 	/*E(App.Service.Tag)*/
 	/*B(App.Service.User)*/
