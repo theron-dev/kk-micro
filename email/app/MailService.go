@@ -2,6 +2,7 @@ package app
 
 import (
 	"bytes"
+	"crypto/tls"
 	"encoding/base64"
 	"net/smtp"
 	"strings"
@@ -26,6 +27,54 @@ func (S *MailService) GetTitle() string {
 }
 
 /*E(Title)*/
+
+func SendMail(addr string, a smtp.Auth, from string, to []string, msg []byte) error {
+	c, err := smtp.Dial(addr)
+	if err != nil {
+		return err
+	}
+	defer c.Close()
+
+	if err = c.Hello("localhost"); err != nil {
+		return err
+	}
+
+	if ok, _ := c.Extension("STARTTLS"); ok {
+		config := &tls.Config{
+			InsecureSkipVerify: true,
+		}
+		if err = c.StartTLS(config); err != nil {
+			return err
+		}
+	}
+
+	if err = c.Auth(a); err != nil {
+		return err
+	}
+
+	if err = c.Mail(from); err != nil {
+		return err
+	}
+
+	for _, addr := range to {
+		if err = c.Rcpt(addr); err != nil {
+			return err
+		}
+	}
+	w, err := c.Data()
+	if err != nil {
+		return err
+	}
+	_, err = w.Write(msg)
+	if err != nil {
+		return err
+	}
+	err = w.Close()
+	if err != nil {
+		return err
+	}
+	return c.Quit()
+}
 
 /*B(Handle)*/ /*E(Handle)*/
 /*B(Handle.Send)*/
@@ -75,5 +124,5 @@ func (S *MailService) HandleSendTask(a micro.IApp, task *SendTask) error {
 	body.WriteString("\r\n")
 	body.WriteString(base64.StdEncoding.EncodeToString([]byte(task.Content)))
 
-	return smtp.SendMail(addr, auth, from, strings.Split(task.To, ";"), body.Bytes())
+	return SendMail(addr, auth, from, strings.Split(task.To, ";"), body.Bytes())
 }

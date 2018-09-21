@@ -229,6 +229,12 @@ services:
           - name: uid
             title: 用户ID
             type: object
+          - name: uids
+            title: 用户ID
+            type: string
+          - name: exclude
+            title: 排除UID
+            type: string
           - name: status
             title: 状态多个逗号分割
             type: string

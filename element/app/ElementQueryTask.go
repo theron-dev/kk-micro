@@ -1,9 +1,8 @@
 package app
 
 /*B(Import)*/
-import "github.com/hailongz/kk-micro/micro"
-
-/*E(Import)*/
+	import "github.com/hailongz/kk-micro/micro"
+	/*E(Import)*/
 
 type /*B(Result)*/ ElementQueryTaskResult /*E(Result)*/ struct {
 	/*B(Result.Base)*/

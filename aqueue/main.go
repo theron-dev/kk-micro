@@ -8,6 +8,11 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/hailongz/kk-lib/dynamic"
 	"github.com/hailongz/kk-lib/kk"
+	_ "github.com/hailongz/kk-logic/logic/captcha"
+	_ "github.com/hailongz/kk-logic/logic/http"
+	_ "github.com/hailongz/kk-logic/logic/lib"
+	_ "github.com/hailongz/kk-logic/logic/oss"
+	_ "github.com/hailongz/kk-logic/logic/redis"
 	"github.com/hailongz/kk-micro/aqueue/app"
 	"github.com/hailongz/kk-micro/micro"
 )

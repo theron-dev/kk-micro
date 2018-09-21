@@ -425,6 +425,7 @@ func (S *ItemService) HandleStartupTask(a micro.IApp, task *micro.StartupTask) e
 									err := ExecShell(&v, conn, prefix)
 									if err != nil {
 										v.Errmsg = err.Error()
+										keys["errmsg"] = true
 										if v.MaxCount > 0 && v.Count >= v.MaxCount {
 											v.Status = ITEM_STATUS_ERROR
 										} else {
@@ -440,6 +441,7 @@ func (S *ItemService) HandleStartupTask(a micro.IApp, task *micro.StartupTask) e
 									err := ExecLogic(&v, conn, prefix)
 									if err != nil {
 										v.Errmsg = err.Error()
+										keys["errmsg"] = true
 										if v.MaxCount > 0 && v.Count >= v.MaxCount {
 											v.Status = ITEM_STATUS_ERROR
 										} else {

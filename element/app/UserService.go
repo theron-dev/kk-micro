@@ -11,8 +11,9 @@ import (
 )
 
 /*B(Import)*/
-	import "github.com/hailongz/kk-micro/micro"
-	/*E(Import)*/
+import "github.com/hailongz/kk-micro/micro"
+
+/*E(Import)*/
 
 type /*B(Service)*/ UserService /*E(Service)*/ struct {
 
@@ -31,7 +32,7 @@ func (S *UserService) GetTitle() string {
 /*B(Handle.UserGet)*/
 /*获取*/
 func (S *UserService) HandleUserGetTask(a micro.IApp, task *UserGetTask) error {
-/*E(Handle.UserGet)*/
+	/*E(Handle.UserGet)*/
 	//TODO
 
 	if task.Id == 0 {
@@ -79,7 +80,7 @@ func (S *UserService) HandleUserGetTask(a micro.IApp, task *UserGetTask) error {
 /*B(Handle.UserRemove)*/
 /*删除*/
 func (S *UserService) HandleUserRemoveTask(a micro.IApp, task *UserRemoveTask) error {
-/*E(Handle.UserRemove)*/
+	/*E(Handle.UserRemove)*/
 	//TODO
 
 	if task.Id == 0 {
@@ -177,7 +178,7 @@ func (S *UserService) HandleUserRemoveTask(a micro.IApp, task *UserRemoveTask) e
 /*B(Handle.UserJoin)*/
 /*加入*/
 func (S *UserService) HandleUserJoinTask(a micro.IApp, task *UserJoinTask) error {
-/*E(Handle.UserJoin)*/
+	/*E(Handle.UserJoin)*/
 	//TODO
 
 	if task.Id == 0 {
@@ -315,7 +316,7 @@ func (S *UserService) HandleUserJoinTask(a micro.IApp, task *UserJoinTask) error
 /*B(Handle.UserQuery)*/
 /*查询*/
 func (S *UserService) HandleUserQueryTask(a micro.IApp, task *UserQueryTask) error {
-/*E(Handle.UserQuery)*/
+	/*E(Handle.UserQuery)*/
 	//TODO
 
 	conn, prefix, err := micro.DBOpen(a, "dbr")
@@ -339,6 +340,30 @@ func (S *UserService) HandleUserQueryTask(a micro.IApp, task *UserQueryTask) err
 	if task.Uid != nil {
 		sql.WriteString(" AND uid=?")
 		args = append(args, task.Uid)
+	}
+
+	if task.Uids != "" {
+		sql.WriteString(" AND uid IN (")
+		for i, s := range strings.Split(task.Uids, ",") {
+			if i != 0 {
+				sql.WriteString(",")
+			}
+			sql.WriteString("?")
+			args = append(args, s)
+		}
+		sql.WriteString(")")
+	}
+
+	if task.Exclude != "" {
+		sql.WriteString(" AND uid NOT IN (")
+		for i, s := range strings.Split(task.Uids, ",") {
+			if i != 0 {
+				sql.WriteString(",")
+			}
+			sql.WriteString("?")
+			args = append(args, s)
+		}
+		sql.WriteString(")")
 	}
 
 	if task.Status != "" {

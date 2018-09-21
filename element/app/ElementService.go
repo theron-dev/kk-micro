@@ -12,9 +12,8 @@ import (
 )
 
 /*B(Import)*/
-import "github.com/hailongz/kk-micro/micro"
-
-/*E(Import)*/
+	import "github.com/hailongz/kk-micro/micro"
+	/*E(Import)*/
 
 type /*B(Service)*/ ElementService /*E(Service)*/ struct {
 
@@ -33,7 +32,7 @@ func (S *ElementService) GetTitle() string {
 /*B(Handle.ElementGet)*/
 /*获取*/
 func (S *ElementService) HandleElementGetTask(a micro.IApp, task *ElementGetTask) error {
-	/*E(Handle.ElementGet)*/
+/*E(Handle.ElementGet)*/
 	//TODO
 
 	conn, prefix, err := micro.DBOpen(a, "dbr")
@@ -62,7 +61,7 @@ func (S *ElementService) HandleElementGetTask(a micro.IApp, task *ElementGetTask
 /*B(Handle.ElementSet)*/
 /*修改*/
 func (S *ElementService) HandleElementSetTask(a micro.IApp, task *ElementSetTask) error {
-	/*E(Handle.ElementSet)*/
+/*E(Handle.ElementSet)*/
 	//TODO
 
 	if task.Id == 0 {
@@ -325,7 +324,7 @@ func GetLastChildElement(conn db.Database, prefix string, pid int64) (*Element, 
 /*B(Handle.ElementAdd)*/
 /*添加*/
 func (S *ElementService) HandleElementAddTask(a micro.IApp, task *ElementAddTask) error {
-	/*E(Handle.ElementAdd)*/
+/*E(Handle.ElementAdd)*/
 	//TODO
 
 	conn, prefix, err := micro.DBOpen(a, "db")
@@ -428,6 +427,10 @@ func (S *ElementService) HandleElementAddTask(a micro.IApp, task *ElementAddTask
 					return err
 				}
 
+				if p == nil {
+					return micro.NewError(ERROR_NOT_FOUND, fmt.Sprintf("未找到父级节点 [%d]", task.Pid))
+				}
+
 				v.Pid = p.Id
 				v.Depth = p.Depth + 1
 				v.Rank = 0
@@ -494,7 +497,7 @@ func (S *ElementService) HandleElementAddTask(a micro.IApp, task *ElementAddTask
 /*B(Handle.ElementQuery)*/
 /*查询*/
 func (S *ElementService) HandleElementQueryTask(a micro.IApp, task *ElementQueryTask) error {
-	/*E(Handle.ElementQuery)*/
+/*E(Handle.ElementQuery)*/
 	//TODO
 
 	conn, prefix, err := micro.DBOpen(a, "dbr")
@@ -675,7 +678,7 @@ func RemoveElement(conn db.Database, prefix string, id int64) error {
 /*B(Handle.ElementRemove)*/
 /*删除*/
 func (S *ElementService) HandleElementRemoveTask(a micro.IApp, task *ElementRemoveTask) error {
-	/*E(Handle.ElementRemove)*/
+/*E(Handle.ElementRemove)*/
 	//TODO
 
 	conn, prefix, err := micro.DBOpen(a, "db")

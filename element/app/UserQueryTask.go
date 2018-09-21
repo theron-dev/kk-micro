@@ -1,8 +1,9 @@
 package app
 
 /*B(Import)*/
-	import "github.com/hailongz/kk-micro/micro"
-	/*E(Import)*/
+import "github.com/hailongz/kk-micro/micro"
+
+/*E(Import)*/
 
 type /*B(Result)*/ UserQueryTaskResult /*E(Result)*/ struct {
 	/*B(Result.Base)*/
@@ -21,6 +22,12 @@ type /*B(Task)*/ UserQueryTask /*E(Task)*/ struct {
 	/*E(Task.Base)*/
 
 	/*B(Input)*/ /*E(Input)*/
+	/*B(Input.exclude)*/
+	Exclude string `json:"exclude" title:"排除UID"`
+	/*E(Input.exclude)*/
+	/*B(Input.uids)*/
+	Uids string `json:"uids" title:"用户ID"`
+	/*E(Input.uids)*/
 	/*B(Input.documentId)*/
 	DocumentId int64 `json:"documentId" title:"文档ID 用于数据分区"`
 	/*E(Input.documentId)*/

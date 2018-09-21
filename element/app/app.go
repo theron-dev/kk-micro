@@ -13,19 +13,19 @@ func Open(app micro.IApp) micro.IApp {
 	/*B(App.Service.Element)*/
 	{
 		s := ElementService{}
+		app.Use(&ElementAddTask{},&s)
+		app.Use(&ElementSetTask{},&s)
 		app.Use(&ElementGetTask{},&s)
 		app.Use(&ElementRemoveTask{},&s)
 		app.Use(&ElementQueryTask{},&s)
-		app.Use(&ElementAddTask{},&s)
-		app.Use(&ElementSetTask{},&s)
 	}
 	/*E(App.Service.Element)*/
 	/*B(App.Service.Tag)*/
 	{
 		s := TagService{}
+		app.Use(&TagQueryTask{},&s)
 		app.Use(&TagCounterQueryTask{},&s)
 		app.Use(&TagCounterGetTask{},&s)
-		app.Use(&TagQueryTask{},&s)
 	}
 	/*E(App.Service.Tag)*/
 	/*B(App.Service.User)*/
